@@ -2,13 +2,13 @@
 
 **Simulador 3D de patrulha, salvamento, investigação e proteção ambiental em praias brasileiras.**
 
-**Versão experimental atual:** 0.2.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
+**Versão experimental atual:** 0.3.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
 
 **Desenvolvimento e adaptação WMK:** **Walney Moreira Klein** — [walneyk@hotmail.com](mailto:walneyk@hotmail.com).
 
 ## 🎮 Jogar
 
-1. Abra [index.html](index.html) em um navegador moderno com WebGL. Necessita acesso à internet para carregar Three.js pelo CDN.
+1. Execute um servidor HTTP local ou hospede em GitHub Pages. **Não abra por `file://`**: esta versão carrega JSON por `fetch()`. Necessita acesso à internet para carregar Three.js pelo CDN.
 2. Escolha um dos três mapas e uma das cinco profissões.
 3. Clique em **Iniciar turno**, siga os objetivos no minimapa e conclua cada etapa da ocorrência.
 4. Use o botão de interação ou a tecla **E** próximo ao alvo.
@@ -44,9 +44,10 @@ Em telas pequenas, existem botões de movimento e corrida. A jogabilidade usa ob
 
 ```text
 WMK-Guardioes-Litoral/
-├── index.html            # jogo 3D e interface (protótipo monolítico)
+├── index.html            # motor 3D + interface e carregador JSON
 ├── README.md             # este documento
 ├── LICENSE               # licença MIT
+├── dados/                # mapas.json, profissoes.json, missoes.json
 ├── pesquisa.html          # pesquisa comparativa de jogos
 ├── roadmap.html          # plano de evolução e histórico de versões
 ├── tests/                # verificação estática do HTML e do JS
@@ -55,7 +56,7 @@ WMK-Guardioes-Litoral/
     └── primeiro-contato.html
 ```
 
-O protótipo inicial concentra lógica, CSS e HTML em `index.html`. Uma prioridade do roadmap é modularizar sem quebrar a jogabilidade.
+Na v0.3, mapas, profissões e missões ficam em JSON separados. Motor, HTML e CSS ainda permanecem no `index.html`; modularização de JS/CSS continua planejada.
 
 ## 🛠️ Executar com servidor local (recomendado)
 
@@ -70,13 +71,14 @@ Alternativamente, hospede a pasta no Apache/XAMPP e navegue até sua URL local. 
 
 ## ✅ Escopo presente e limitações
 
-O código-fonte inicial inclui três mapas, cinco profissões, missões com múltiplas etapas, HUD, minimapa, avaliação de turno, relógio, pausa e personagens/modelos 3D procedurais. A lógica atual é um protótipo, **não** um simulador de procedimentos profissionais. Na v0.2.0 existe alternância entre profissionais na mesma cena, com restauração de missões por profissão. Ainda não há backend, IA para equipes não controladas, multiplayer, persistência em disco, editor de mapas ou arquivos JSON externos por profissão. Não foram reivindicados testes automatizados ou garantia de funcionamento em todos os dispositivos.
+O código-fonte inicial inclui três mapas, cinco profissões, missões com múltiplas etapas, HUD, minimapa, avaliação de turno, relógio, pausa e personagens/modelos 3D procedurais. A lógica atual é um protótipo, **não** um simulador de procedimentos profissionais. Na v0.3.0 há alternância entre profissionais, restauração de missões, dados JSON externos, validação inicial e exportação/importação de um pacote JSON na tela inicial. Ainda não há backend, IA para equipes não controladas, multiplayer, persistência em disco da partida, editor de mapas ou veículos adicionais. A seleção de mapa/profissão é armazenada no `localStorage`. Não foram reivindicados testes automatizados ou garantia de funcionamento em todos os dispositivos.
 
 ## 📘 Documentação
 
 - [Manual: primeiro contato](manuais/primeiro-contato.html)
 - [Roadmap de desenvolvimento](roadmap.html)
 - [Pesquisa de jogos similares](pesquisa.html)
+- [Manual de configuração JSON](manuais/dados-json.html)
 
 ## 📄 Licença e atribuição
 
@@ -86,10 +88,22 @@ O conteúdo original/autoral desta versão é distribuído sob [MIT](LICENSE), r
 
 Contribuições e propostas de melhoria são bem-vindas por issues e pull requests.
 
-## 🧪 Como validar a versão 0.2.0
+## 🧪 Como validar a versão 0.3.0
 
-Execute `node tests/validar.js` (Node.js 18+). Essa validação verifica sintaxe dos scripts JavaScript embutidos e a presença de componentes essenciais; **não substitui testes visuais**.
+Execute `node tests/validar.js` (Node.js 18+). Essa validação verifica a sintaxe dos scripts JavaScript embutidos, o formato dos três JSONs e a presença de componentes essenciais; **não substitui testes visuais**.
 
 Teste manual recomendado: abra o jogo, inicie um turno, mova o salva-vidas, pressione Tab para assumir o policial, mova o policial e pressione Tab mais quatro vezes. Verifique que o salva-vidas continua na posição anterior e que seu objetivo foi restaurado. Em seguida conclua uma missão, pause, encerre e inicie novo turno. Em celular, confira a direção direita e o botão de troca no topo.
 
 **Observação técnica:** no estágio 0.2 o sistema de alternância ainda utiliza a lista de funções e missões embutida no HTML; configuração externa via JSON e comportamento autônomo dos agentes pertencem às versões posteriores. A versão permanece experimental até o smoke test em navegador.
+
+## Dados externos e pacote JSON — v0.3.0
+
+- `dados/mapas.json`: cenários, cores, textos e deslocamentos.
+- `dados/profissoes.json`: dados de cada profissional, modelo simples e velocidade.
+- `dados/missoes.json`: missões e etapas individuais por profissão.
+- O carregamento falha com mensagem visível caso algum arquivo esteja ausente ou inválido.
+- **Exportar dados JSON** gera um único arquivo com `schemaVersion: 1` e os três conjuntos.
+- **Importar pacote JSON** aceita arquivo de até 2 MB no menu e substitui os dados apenas durante a sessão atual. Para mudanças permanentes, edite os três arquivos em `dados/` e publique um commit.
+- O navegador lembra a última profissão e praia escolhidas em `localStorage`, não o progresso do turno.
+
+Execute `node tests/validar.js` para verificar sintaxe e integridade estática. O teste automatizado não substitui validação de câmera, física, controles e interações em navegador.
