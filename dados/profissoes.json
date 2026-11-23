@@ -1,0 +1,87 @@
+[
+  {
+    "id": "lifeguard",
+    "name": "Salva-vidas",
+    "icon": "🛟",
+    "short": "Resgates e primeiros socorros.",
+    "code": "SALVAMENTO",
+    "accent": "#ff706f",
+    "shirt": "#ee5555",
+    "pants": "#f2ede0",
+    "cap": "#f4f2e7",
+    "speed": 7.5,
+    "vehicle": false,
+    "spawn": [
+      -17,
+      0
+    ]
+  },
+  {
+    "id": "police",
+    "name": "Policial",
+    "icon": "👮",
+    "short": "Patrulha, atendimento e ocorrências.",
+    "code": "POLICIAMENTO",
+    "accent": "#7ca8ff",
+    "shirt": "#294f85",
+    "pants": "#182e49",
+    "cap": "#203c67",
+    "speed": 7.2,
+    "vehicle": false,
+    "spawn": [
+      -23,
+      8
+    ]
+  },
+  {
+    "id": "marine",
+    "name": "Patrulha marítima",
+    "icon": "🚤",
+    "short": "Rondas costeiras em lancha.",
+    "code": "PATRULHA MARÍTIMA",
+    "accent": "#53d5c9",
+    "shirt": "#f2f1e8",
+    "pants": "#174a5b",
+    "cap": "#e7eee9",
+    "speed": 12,
+    "vehicle": true,
+    "spawn": [
+      18,
+      0
+    ]
+  },
+  {
+    "id": "investigator",
+    "name": "Investigador",
+    "icon": "🔎",
+    "short": "Pistas, testemunhas e relatórios.",
+    "code": "INVESTIGAÇÃO",
+    "accent": "#e7c773",
+    "shirt": "#bb9a5b",
+    "pants": "#344653",
+    "cap": "#4b5148",
+    "speed": 7.1,
+    "vehicle": false,
+    "spawn": [
+      -22,
+      13
+    ]
+  },
+  {
+    "id": "eco",
+    "name": "Fiscal ambiental",
+    "icon": "🌱",
+    "short": "Proteção da fauna e praia limpa.",
+    "code": "MEIO AMBIENTE",
+    "accent": "#79d68d",
+    "shirt": "#3e9b68",
+    "pants": "#385843",
+    "cap": "#34734e",
+    "speed": 7.2,
+    "vehicle": false,
+    "spawn": [
+      -16,
+      -8
+    ]
+  }
+]
