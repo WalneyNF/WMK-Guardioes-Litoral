@@ -1,0 +1,8 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const html=read('editor-veiculos.html'),preview=read('js/editor-preview3d.js'),editor=read('js/editor-veiculos.js');
+test('sintaxe editor e renderizador 3D',()=>{assert.doesNotThrow(()=>new vm.Script(preview));assert.doesNotThrow(()=>new vm.Script(editor));});
+test('bibliotecas e scripts na ordem correta',()=>{const names=['three.min.js','GLTFLoader.js','js/editor-preview3d.js','js/editor-veiculos.js'];const positions=names.map(n=>html.indexOf(n));assert.ok(positions.every((p,i)=>p>=0&&(i===0||p>positions[i-1])));});
+test('controles e selecao de pecas',()=>{for(const id of ['previewWrapper','resetCamera','importGLB','reset3D','exportParts','glbFile','partName','partX','partY','partZ','partRotation','partSX','partScale'])assert.ok(html.includes('id="'+id+'"'),id);for(const fn of ['function procedural(','function picking(','function select(','function exportParts(','function importGLB('])assert.ok(preview.includes(fn),fn);assert.ok(editor.includes('WMKPreview3D?.show'));assert.ok(editor.includes('WMKPreview3D.init'));});
+test('importacao GLB limitada e liberacao de memoria',()=>{assert.ok(preview.includes('15 * 1024 * 1024'));assert.ok(preview.includes('URL.revokeObjectURL'));assert.ok(preview.includes('GLTFLoader'));});
+test('exportacao de transformacoes com schema e metadados',()=>{assert.ok(preview.includes("format:'wmk-vehicle-parts'"));assert.ok(preview.includes('position:o.position.toArray()'));assert.ok(preview.includes('rotation:o.rotation.toArray()'));assert.ok(preview.includes('scale:o.scale.toArray()'));});
