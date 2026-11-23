@@ -1,0 +1,545 @@
+{
+  "lifeguard": [
+    {
+      "title": "Socorro na arrebentação",
+      "description": "Um banhista está em dificuldade. Chegue rápido, faça o resgate e complete o atendimento.",
+      "steps": [
+        {
+          "type": "rescue",
+          "title": "Banhista em dificuldade",
+          "detail": "A pessoa está sinalizando por ajuda no mar.",
+          "action": "Resgatar banhista",
+          "x": 21,
+          "z": -12,
+          "callSeconds": 65,
+          "reward": 190
+        },
+        {
+          "type": "aid",
+          "title": "Primeiros socorros",
+          "detail": "Leve o atendimento até a faixa de areia.",
+          "action": "Prestar atendimento",
+          "x": -1,
+          "z": -11,
+          "reward": 130
+        },
+        {
+          "type": "flag",
+          "title": "Reforçar área segura",
+          "detail": "Confira a sinalização na torre de salvamento.",
+          "action": "Conferir sinalização",
+          "x": -6,
+          "z": 0,
+          "reward": 100
+        }
+      ]
+    },
+    {
+      "title": "Correnteza forte",
+      "description": "O mar ficou agitado. Oriente os banhistas e responda ao novo alerta de salvamento.",
+      "steps": [
+        {
+          "type": "warn",
+          "title": "Orientar os banhistas",
+          "detail": "Avise o grupo próximo à zona de correnteza.",
+          "action": "Orientar banhistas",
+          "x": 2,
+          "z": 14,
+          "reward": 110
+        },
+        {
+          "type": "rescue",
+          "title": "Resgate na zona de risco",
+          "detail": "Há uma pessoa pedindo ajuda além da arrebentação.",
+          "action": "Resgatar banhista",
+          "x": 24,
+          "z": 15,
+          "callSeconds": 62,
+          "reward": 200
+        },
+        {
+          "type": "report",
+          "title": "Retornar à torre",
+          "detail": "Registre o atendimento e prepare a próxima ronda.",
+          "action": "Registrar ocorrência",
+          "x": -6,
+          "z": 0,
+          "reward": 100
+        }
+      ]
+    },
+    {
+      "title": "Criança perdida",
+      "description": "Uma família procurou a equipe. Localize a criança e acompanhe-a até o ponto de encontro.",
+      "steps": [
+        {
+          "type": "findchild",
+          "title": "Localizar a criança",
+          "detail": "Procure perto das toalhas e dos guarda-sóis.",
+          "action": "Acolher criança",
+          "x": -21,
+          "z": -27,
+          "reward": 130
+        },
+        {
+          "type": "escort",
+          "title": "Ponto de encontro",
+          "detail": "A família aguarda perto do calçadão.",
+          "action": "Reunir com a família",
+          "x": -13,
+          "z": -23,
+          "reward": 160
+        },
+        {
+          "type": "report",
+          "title": "Atualizar a torre",
+          "detail": "Avise a equipe que a ocorrência foi resolvida.",
+          "action": "Registrar ocorrência",
+          "x": -6,
+          "z": 0,
+          "reward": 90
+        }
+      ]
+    }
+  ],
+  "police": [
+    {
+      "title": "Confusão no quiosque",
+      "description": "Uma discussão está incomodando os banhistas. Acalme a situação e converse com uma testemunha.",
+      "steps": [
+        {
+          "type": "intervene",
+          "title": "Atender a ocorrência",
+          "detail": "Converse com as pessoas e encerre a discussão sem violência.",
+          "action": "Acalmar a situação",
+          "x": -13,
+          "z": 10,
+          "reward": 170
+        },
+        {
+          "type": "talk",
+          "title": "Ouvir testemunha",
+          "detail": "Uma pessoa próxima pode ajudar a esclarecer o chamado.",
+          "action": "Conversar com testemunha",
+          "x": -21,
+          "z": 0,
+          "reward": 120
+        },
+        {
+          "type": "report",
+          "title": "Registrar ocorrência",
+          "detail": "Leve o resumo até o posto de patrulha.",
+          "action": "Registrar ocorrência",
+          "x": -31,
+          "z": 5,
+          "reward": 100
+        }
+      ]
+    },
+    {
+      "title": "Objeto suspeito",
+      "description": "Um item foi deixado sem identificação. Verifique a área, fale com os presentes e comunique o posto.",
+      "steps": [
+        {
+          "type": "inspect",
+          "title": "Verificar o objeto",
+          "detail": "Inspecione o cooler deixado sem identificação.",
+          "action": "Inspecionar objeto",
+          "x": -13,
+          "z": -13,
+          "reward": 140
+        },
+        {
+          "type": "talk",
+          "title": "Conversar com frequentadores",
+          "detail": "Pergunte se alguém viu quem deixou o objeto.",
+          "action": "Conversar com testemunha",
+          "x": -20,
+          "z": -20,
+          "reward": 120
+        },
+        {
+          "type": "report",
+          "title": "Comunicar o posto",
+          "detail": "Atualize o registro da equipe de patrulha.",
+          "action": "Registrar ocorrência",
+          "x": -31,
+          "z": 5,
+          "reward": 100
+        }
+      ]
+    },
+    {
+      "title": "Patrulha do calçadão",
+      "description": "Faça uma ronda preventiva, confira um ponto de atenção e retorne ao posto.",
+      "steps": [
+        {
+          "type": "patrol",
+          "title": "Ponto norte",
+          "detail": "Confira o trecho mais movimentado do calçadão.",
+          "action": "Conferir ponto",
+          "x": -30,
+          "z": -24,
+          "reward": 110
+        },
+        {
+          "type": "inspect",
+          "title": "Área das barracas",
+          "detail": "Verifique se a passagem está livre para os pedestres.",
+          "action": "Inspecionar área",
+          "x": -7,
+          "z": -28,
+          "reward": 130
+        },
+        {
+          "type": "report",
+          "title": "Retorno ao posto",
+          "detail": "Conclua a ronda no posto de patrulha.",
+          "action": "Registrar ronda",
+          "x": -31,
+          "z": 5,
+          "reward": 100
+        }
+      ]
+    }
+  ],
+  "marine": [
+    {
+      "title": "Embarcação à deriva",
+      "description": "Uma embarcação precisa de assistência. Faça a ronda, aproxime-se e acompanhe o retorno seguro.",
+      "steps": [
+        {
+          "type": "patrol",
+          "title": "Localizar embarcação",
+          "detail": "Siga até o ponto sinalizado pela equipe costeira.",
+          "action": "Conferir posição",
+          "x": 29,
+          "z": -19,
+          "reward": 130
+        },
+        {
+          "type": "assist",
+          "title": "Prestar assistência",
+          "detail": "Aproxime-se da embarcação para oferecer ajuda.",
+          "action": "Auxiliar embarcação",
+          "x": 36,
+          "z": -8,
+          "reward": 190
+        },
+        {
+          "type": "return",
+          "title": "Retornar à base",
+          "detail": "Conclua o chamado no ponto de apoio marítimo.",
+          "action": "Registrar retorno",
+          "x": 17,
+          "z": 0,
+          "reward": 100
+        }
+      ]
+    },
+    {
+      "title": "Rota das boias",
+      "description": "Faça uma ronda pelas boias de segurança e confirme que a rota está sinalizada.",
+      "steps": [
+        {
+          "type": "buoy",
+          "title": "Boia oeste",
+          "detail": "Inspecione a primeira marcação da rota.",
+          "action": "Inspecionar boia",
+          "x": 27,
+          "z": -23,
+          "reward": 120
+        },
+        {
+          "type": "buoy",
+          "title": "Boia central",
+          "detail": "Confira a sinalização no centro da rota.",
+          "action": "Inspecionar boia",
+          "x": 36,
+          "z": 0,
+          "reward": 130
+        },
+        {
+          "type": "buoy",
+          "title": "Boia leste",
+          "detail": "Finalize a ronda na última marcação.",
+          "action": "Inspecionar boia",
+          "x": 29,
+          "z": 22,
+          "reward": 140
+        }
+      ]
+    },
+    {
+      "title": "Embarcação suspeita",
+      "description": "Uma embarcação foi vista fora da rota. Identifique a situação e comunique a base.",
+      "steps": [
+        {
+          "type": "inspect",
+          "title": "Verificar embarcação",
+          "detail": "Aproxime-se e observe a embarcação sinalizada.",
+          "action": "Inspecionar embarcação",
+          "x": 34,
+          "z": 13,
+          "reward": 150
+        },
+        {
+          "type": "identify",
+          "title": "Confirmar identificação",
+          "detail": "Confira o segundo ponto indicado pela patrulha.",
+          "action": "Confirmar identificação",
+          "x": 25,
+          "z": 7,
+          "reward": 140
+        },
+        {
+          "type": "return",
+          "title": "Comunicar a base",
+          "detail": "Retorne ao ponto de apoio marítimo.",
+          "action": "Registrar retorno",
+          "x": 17,
+          "z": 0,
+          "reward": 100
+        }
+      ]
+    }
+  ],
+  "investigator": [
+    {
+      "title": "Pegadas na areia",
+      "description": "Uma ocorrência precisa ser esclarecida. Reúna evidências, ouça testemunhas e registre as descobertas.",
+      "steps": [
+        {
+          "type": "clue",
+          "title": "Primeira evidência",
+          "detail": "Procure uma pista perto da faixa de areia.",
+          "action": "Coletar evidência",
+          "x": -8,
+          "z": 10,
+          "reward": 120
+        },
+        {
+          "type": "clue",
+          "title": "Segunda evidência",
+          "detail": "Verifique o segundo ponto indicado.",
+          "action": "Coletar evidência",
+          "x": -15,
+          "z": 17,
+          "reward": 130
+        },
+        {
+          "type": "talk",
+          "title": "Ouvir testemunha",
+          "detail": "Converse com a pessoa que estava na área.",
+          "action": "Entrevistar testemunha",
+          "x": -20,
+          "z": 22,
+          "reward": 150
+        },
+        {
+          "type": "report",
+          "title": "Fechar relatório",
+          "detail": "Leve as informações ao ponto de registro.",
+          "action": "Fechar relatório",
+          "x": -31,
+          "z": 7,
+          "reward": 120
+        }
+      ]
+    },
+    {
+      "title": "Equipamento desaparecido",
+      "description": "Um equipamento sumiu da praia. Siga as pistas e converse com quem estava por perto.",
+      "steps": [
+        {
+          "type": "clue",
+          "title": "Examinar a área",
+          "detail": "Procure marcas próximas ao local do desaparecimento.",
+          "action": "Examinar pista",
+          "x": -9,
+          "z": -7,
+          "reward": 120
+        },
+        {
+          "type": "inspect",
+          "title": "Verificar pertences",
+          "detail": "Inspecione o ponto indicado na faixa de areia.",
+          "action": "Inspecionar ponto",
+          "x": -20,
+          "z": -13,
+          "reward": 130
+        },
+        {
+          "type": "talk",
+          "title": "Ouvir frequentador",
+          "detail": "Converse com a pessoa que encontrou a pista.",
+          "action": "Entrevistar testemunha",
+          "x": -27,
+          "z": -18,
+          "reward": 150
+        },
+        {
+          "type": "report",
+          "title": "Registrar conclusão",
+          "detail": "Atualize o relatório no ponto de investigação.",
+          "action": "Fechar relatório",
+          "x": -31,
+          "z": 7,
+          "reward": 120
+        }
+      ]
+    },
+    {
+      "title": "O caso do farol",
+      "description": "Uma sequência de sinais estranhos chamou atenção. Verifique as evidências e registre a conclusão.",
+      "steps": [
+        {
+          "type": "clue",
+          "title": "Sinal na costa",
+          "detail": "Examine o primeiro ponto indicado pela equipe.",
+          "action": "Coletar evidência",
+          "x": 1,
+          "z": 26,
+          "reward": 140
+        },
+        {
+          "type": "clue",
+          "title": "Marca perto das pedras",
+          "detail": "Procure outra pista na direção do litoral rochoso.",
+          "action": "Coletar evidência",
+          "x": -9,
+          "z": 31,
+          "reward": 150
+        },
+        {
+          "type": "report",
+          "title": "Finalizar investigação",
+          "detail": "Registre o resultado no ponto de investigação.",
+          "action": "Fechar relatório",
+          "x": -31,
+          "z": 7,
+          "reward": 140
+        }
+      ]
+    }
+  ],
+  "eco": [
+    {
+      "title": "Praia sem plástico",
+      "description": "Recolha resíduos trazidos pela maré e verifique a qualidade da água.",
+      "steps": [
+        {
+          "type": "clean",
+          "title": "Recolher resíduos",
+          "detail": "Limpe o primeiro ponto próximo à água.",
+          "action": "Recolher resíduos",
+          "x": -1,
+          "z": -18,
+          "reward": 130
+        },
+        {
+          "type": "clean",
+          "title": "Limpar a faixa de areia",
+          "detail": "Recolha os resíduos do segundo ponto.",
+          "action": "Recolher resíduos",
+          "x": 4,
+          "z": -4,
+          "reward": 140
+        },
+        {
+          "type": "sample",
+          "title": "Coletar amostra",
+          "detail": "Faça uma coleta para verificar a água.",
+          "action": "Coletar amostra",
+          "x": 10,
+          "z": 12,
+          "reward": 150
+        },
+        {
+          "type": "report",
+          "title": "Atualizar o posto ambiental",
+          "detail": "Registre os cuidados realizados na praia.",
+          "action": "Registrar relatório",
+          "x": -24,
+          "z": 0,
+          "reward": 100
+        }
+      ]
+    },
+    {
+      "title": "Ninho protegido",
+      "description": "Uma área de desova precisa ser protegida. Isole o local e deixe a faixa de areia limpa.",
+      "steps": [
+        {
+          "type": "protect",
+          "title": "Proteger a área",
+          "detail": "Confira o ponto de proteção da fauna.",
+          "action": "Proteger área",
+          "x": 1,
+          "z": 22,
+          "reward": 160
+        },
+        {
+          "type": "clean",
+          "title": "Retirar resíduos próximos",
+          "detail": "Limpe a faixa ao redor sem tocar no ninho.",
+          "action": "Recolher resíduos",
+          "x": 3,
+          "z": 14,
+          "reward": 140
+        },
+        {
+          "type": "report",
+          "title": "Registrar proteção",
+          "detail": "Atualize o posto ambiental.",
+          "action": "Registrar relatório",
+          "x": -24,
+          "z": 0,
+          "reward": 110
+        }
+      ]
+    },
+    {
+      "title": "Água limpa",
+      "description": "Inspecione a costa, recolha resíduos e colete uma amostra para a equipe ambiental.",
+      "steps": [
+        {
+          "type": "inspect",
+          "title": "Inspecionar a costa",
+          "detail": "Verifique o primeiro ponto de atenção ambiental.",
+          "action": "Inspecionar área",
+          "x": 11,
+          "z": -23,
+          "reward": 130
+        },
+        {
+          "type": "clean",
+          "title": "Recolher resíduos",
+          "detail": "Retire o material acumulado na faixa de areia.",
+          "action": "Recolher resíduos",
+          "x": 2,
+          "z": -27,
+          "reward": 140
+        },
+        {
+          "type": "sample",
+          "title": "Coletar amostra",
+          "detail": "Colete uma amostra perto da água.",
+          "action": "Coletar amostra",
+          "x": 10,
+          "z": 22,
+          "reward": 160
+        },
+        {
+          "type": "report",
+          "title": "Enviar relatório",
+          "detail": "Conclua o atendimento no posto ambiental.",
+          "action": "Registrar relatório",
+          "x": -24,
+          "z": 0,
+          "reward": 110
+        }
+      ]
+    }
+  ]
+}
