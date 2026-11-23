@@ -2,7 +2,7 @@
 
 **Simulador 3D de patrulha, salvamento, investigação e proteção ambiental em praias brasileiras.**
 
-**Versão experimental atual:** 0.3.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
+**Versão experimental atual:** 0.4.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
 
 **Desenvolvimento e adaptação WMK:** **Walney Moreira Klein** — [walneyk@hotmail.com](mailto:walneyk@hotmail.com).
 
@@ -36,6 +36,7 @@
 | E | Interagir com objetivo próximo |
 | Esc | Pausar/retomar |
 | Tab ou ⇄ TAB | Alternar profissional durante o turno |
+| V ou 🚤 V | Alternar lancha / jet ski / bote controlando a patrulha marítima |
 | Botão ⛶ | Tela cheia |
 
 Em telas pequenas, existem botões de movimento e corrida. A jogabilidade usa objetivos guiados; atividades reais de salvamento e segurança exigem treinamento profissional.
@@ -47,7 +48,7 @@ WMK-Guardioes-Litoral/
 ├── index.html            # motor 3D + interface e carregador JSON
 ├── README.md             # este documento
 ├── LICENSE               # licença MIT
-├── dados/                # mapas.json, profissoes.json, missoes.json
+├── dados/                # mapas.json, profissoes.json, missoes.json, veiculos.json
 ├── pesquisa.html          # pesquisa comparativa de jogos
 ├── roadmap.html          # plano de evolução e histórico de versões
 ├── tests/                # verificação estática do HTML e do JS
@@ -107,3 +108,9 @@ Teste manual recomendado: abra o jogo, inicie um turno, mova o salva-vidas, pres
 - O navegador lembra a última profissão e praia escolhidas em `localStorage`, não o progresso do turno.
 
 Execute `node tests/validar.js` para verificar sintaxe e integridade estática. O teste automatizado não substitui validação de câmera, física, controles e interações em navegador.
+
+## Frota marítima — v0.4.0 experimental
+
+A função **Patrulha marítima** pode trocar entre **Lancha de patrulha**, **Jet ski de resgate** e **Bote inflável** usando `V` ou o botão 🚤 V na HUD. Cada embarcação usa parâmetros em `dados/veiculos.json`: `id`, `name`, `icon`, `speed`, `scale`, `hull`, `accent`, `model`. A troca preserva posição, orientação e missão do profissional. Os visuais são procedurais simplificados; não são modelos GLB definitivos. A movimentação ainda é arcade, sem inércia ou colisão naval detalhada.
+
+**Pacote JSON atualizado:** exportação e importação usam `schemaVersion: 2`, incluindo agora `vehicles`. Pacotes da v0.3 precisam ser atualizados para esse formato. A importação afeta somente a sessão aberta.
