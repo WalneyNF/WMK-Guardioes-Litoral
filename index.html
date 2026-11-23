@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WMK Guardiões do Litoral — Operação Verão v0.2.0</title>
+<title>WMK Guardiões do Litoral — Operação Verão v0.3.0</title>
 
 <style>
 :root {
@@ -1174,7 +1174,7 @@ button { font: inherit; }
 
     <footer class="menu-footer">
       <div id="selectionSummary" class="selection-summary"></div>
-      <button id="startBtn" class="start-button" type="button">Iniciar turno <span>→</span></button>
+      <button id="startBtn" class="start-button" type="button" disabled>Iniciar turno <span>→</span></button>
     </footer>
 
     <div class="menu-controls">
@@ -1184,9 +1184,10 @@ button { font: inherit; }
       <a href="pesquisa.html" style="color:#78e5d6">🔎 Pesquisa de jogos</a>
       <a href="roadmap.html" style="color:#78e5d6">🧭 Roadmap</a>
       <a href="manuais/primeiro-contato.html" style="color:#78e5d6">📖 Manual</a>
-      <span style="color:#c1d0d8">Versão 0.2.0 (experimental)</span>
+      <span style="color:#c1d0d8">Versão 0.3.0 (experimental)</span>
     </nav>
-    <div id="menuError" class="hidden"></div>
+    <div id="dataStatus" role="status" aria-live="polite" style="margin-top:10px;color:#89dfd2;font-size:11px">Carregando arquivos JSON...</div>
+    <div id="menuError" class="hidden" role="alert"></div>
   </div>
 </div>
 
@@ -1317,272 +1318,11 @@ button { font: inherit; }
 
   const $ = (id) => document.getElementById(id);
 
-  const MAPS = [
-    {
-      id: "sol",
-      name: "Praia do Sol",
-      region: "Costa Dourada",
-      icon: "☀️",
-      description: "Calçadão movimentado, quiosques e mar aberto.",
-      sky: "#a6dff0",
-      fog: "#b5d9df",
-      sand: "#e8cb8d",
-      water: "#1685a4",
-      shallow: "#52c9c7",
-      offset: { x: 0, z: 0 }
-    },
-    {
-      id: "enseada",
-      name: "Enseada Azul",
-      region: "Baía das Pedras",
-      icon: "🌊",
-      description: "Águas claras, costões e um farol histórico.",
-      sky: "#a7e6e7",
-      fog: "#b5dedb",
-      sand: "#eddaa4",
-      water: "#167c91",
-      shallow: "#56d2c6",
-      offset: { x: 1, z: 2 }
-    },
-    {
-      id: "ilha",
-      name: "Ilha Brava",
-      region: "Arquipélago Sul",
-      icon: "🏝️",
-      description: "Praia isolada, rochas vulcânicas e um naufrágio.",
-      sky: "#b4dce0",
-      fog: "#bdd7d7",
-      sand: "#cdb28a",
-      water: "#155e77",
-      shallow: "#45aa9e",
-      offset: { x: -2, z: -3 }
-    }
-  ];
+  let MAPS = [];
 
-  const ROLES = [
-    {
-      id: "lifeguard",
-      name: "Salva-vidas",
-      icon: "🛟",
-      short: "Resgates e primeiros socorros.",
-      code: "SALVAMENTO",
-      accent: "#ff706f",
-      shirt: "#ee5555",
-      pants: "#f2ede0",
-      cap: "#f4f2e7",
-      speed: 7.5,
-      vehicle: false,
-      spawn: [-17, 0]
-    },
-    {
-      id: "police",
-      name: "Policial",
-      icon: "👮",
-      short: "Patrulha, atendimento e ocorrências.",
-      code: "POLICIAMENTO",
-      accent: "#7ca8ff",
-      shirt: "#294f85",
-      pants: "#182e49",
-      cap: "#203c67",
-      speed: 7.2,
-      vehicle: false,
-      spawn: [-23, 8]
-    },
-    {
-      id: "marine",
-      name: "Patrulha marítima",
-      icon: "🚤",
-      short: "Rondas costeiras em lancha.",
-      code: "PATRULHA MARÍTIMA",
-      accent: "#53d5c9",
-      shirt: "#f2f1e8",
-      pants: "#174a5b",
-      cap: "#e7eee9",
-      speed: 12,
-      vehicle: true,
-      spawn: [18, 0]
-    },
-    {
-      id: "investigator",
-      name: "Investigador",
-      icon: "🔎",
-      short: "Pistas, testemunhas e relatórios.",
-      code: "INVESTIGAÇÃO",
-      accent: "#e7c773",
-      shirt: "#bb9a5b",
-      pants: "#344653",
-      cap: "#4b5148",
-      speed: 7.1,
-      vehicle: false,
-      spawn: [-22, 13]
-    },
-    {
-      id: "eco",
-      name: "Fiscal ambiental",
-      icon: "🌱",
-      short: "Proteção da fauna e praia limpa.",
-      code: "MEIO AMBIENTE",
-      accent: "#79d68d",
-      shirt: "#3e9b68",
-      pants: "#385843",
-      cap: "#34734e",
-      speed: 7.2,
-      vehicle: false,
-      spawn: [-16, -8]
-    }
-  ];
+  let ROLES = [];
 
-  const MISSIONS = {
-    lifeguard: [
-      {
-        title: "Socorro na arrebentação",
-        description: "Um banhista está em dificuldade. Chegue rápido, faça o resgate e complete o atendimento.",
-        steps: [
-          { type: "rescue", title: "Banhista em dificuldade", detail: "A pessoa está sinalizando por ajuda no mar.", action: "Resgatar banhista", x: 21, z: -12, callSeconds: 65, reward: 190 },
-          { type: "aid", title: "Primeiros socorros", detail: "Leve o atendimento até a faixa de areia.", action: "Prestar atendimento", x: -1, z: -11, reward: 130 },
-          { type: "flag", title: "Reforçar área segura", detail: "Confira a sinalização na torre de salvamento.", action: "Conferir sinalização", x: -6, z: 0, reward: 100 }
-        ]
-      },
-      {
-        title: "Correnteza forte",
-        description: "O mar ficou agitado. Oriente os banhistas e responda ao novo alerta de salvamento.",
-        steps: [
-          { type: "warn", title: "Orientar os banhistas", detail: "Avise o grupo próximo à zona de correnteza.", action: "Orientar banhistas", x: 2, z: 14, reward: 110 },
-          { type: "rescue", title: "Resgate na zona de risco", detail: "Há uma pessoa pedindo ajuda além da arrebentação.", action: "Resgatar banhista", x: 24, z: 15, callSeconds: 62, reward: 200 },
-          { type: "report", title: "Retornar à torre", detail: "Registre o atendimento e prepare a próxima ronda.", action: "Registrar ocorrência", x: -6, z: 0, reward: 100 }
-        ]
-      },
-      {
-        title: "Criança perdida",
-        description: "Uma família procurou a equipe. Localize a criança e acompanhe-a até o ponto de encontro.",
-        steps: [
-          { type: "findchild", title: "Localizar a criança", detail: "Procure perto das toalhas e dos guarda-sóis.", action: "Acolher criança", x: -21, z: -27, reward: 130 },
-          { type: "escort", title: "Ponto de encontro", detail: "A família aguarda perto do calçadão.", action: "Reunir com a família", x: -13, z: -23, reward: 160 },
-          { type: "report", title: "Atualizar a torre", detail: "Avise a equipe que a ocorrência foi resolvida.", action: "Registrar ocorrência", x: -6, z: 0, reward: 90 }
-        ]
-      }
-    ],
-    police: [
-      {
-        title: "Confusão no quiosque",
-        description: "Uma discussão está incomodando os banhistas. Acalme a situação e converse com uma testemunha.",
-        steps: [
-          { type: "intervene", title: "Atender a ocorrência", detail: "Converse com as pessoas e encerre a discussão sem violência.", action: "Acalmar a situação", x: -13, z: 10, reward: 170 },
-          { type: "talk", title: "Ouvir testemunha", detail: "Uma pessoa próxima pode ajudar a esclarecer o chamado.", action: "Conversar com testemunha", x: -21, z: 0, reward: 120 },
-          { type: "report", title: "Registrar ocorrência", detail: "Leve o resumo até o posto de patrulha.", action: "Registrar ocorrência", x: -31, z: 5, reward: 100 }
-        ]
-      },
-      {
-        title: "Objeto suspeito",
-        description: "Um item foi deixado sem identificação. Verifique a área, fale com os presentes e comunique o posto.",
-        steps: [
-          { type: "inspect", title: "Verificar o objeto", detail: "Inspecione o cooler deixado sem identificação.", action: "Inspecionar objeto", x: -13, z: -13, reward: 140 },
-          { type: "talk", title: "Conversar com frequentadores", detail: "Pergunte se alguém viu quem deixou o objeto.", action: "Conversar com testemunha", x: -20, z: -20, reward: 120 },
-          { type: "report", title: "Comunicar o posto", detail: "Atualize o registro da equipe de patrulha.", action: "Registrar ocorrência", x: -31, z: 5, reward: 100 }
-        ]
-      },
-      {
-        title: "Patrulha do calçadão",
-        description: "Faça uma ronda preventiva, confira um ponto de atenção e retorne ao posto.",
-        steps: [
-          { type: "patrol", title: "Ponto norte", detail: "Confira o trecho mais movimentado do calçadão.", action: "Conferir ponto", x: -30, z: -24, reward: 110 },
-          { type: "inspect", title: "Área das barracas", detail: "Verifique se a passagem está livre para os pedestres.", action: "Inspecionar área", x: -7, z: -28, reward: 130 },
-          { type: "report", title: "Retorno ao posto", detail: "Conclua a ronda no posto de patrulha.", action: "Registrar ronda", x: -31, z: 5, reward: 100 }
-        ]
-      }
-    ],
-    marine: [
-      {
-        title: "Embarcação à deriva",
-        description: "Uma embarcação precisa de assistência. Faça a ronda, aproxime-se e acompanhe o retorno seguro.",
-        steps: [
-          { type: "patrol", title: "Localizar embarcação", detail: "Siga até o ponto sinalizado pela equipe costeira.", action: "Conferir posição", x: 29, z: -19, reward: 130 },
-          { type: "assist", title: "Prestar assistência", detail: "Aproxime-se da embarcação para oferecer ajuda.", action: "Auxiliar embarcação", x: 36, z: -8, reward: 190 },
-          { type: "return", title: "Retornar à base", detail: "Conclua o chamado no ponto de apoio marítimo.", action: "Registrar retorno", x: 17, z: 0, reward: 100 }
-        ]
-      },
-      {
-        title: "Rota das boias",
-        description: "Faça uma ronda pelas boias de segurança e confirme que a rota está sinalizada.",
-        steps: [
-          { type: "buoy", title: "Boia oeste", detail: "Inspecione a primeira marcação da rota.", action: "Inspecionar boia", x: 27, z: -23, reward: 120 },
-          { type: "buoy", title: "Boia central", detail: "Confira a sinalização no centro da rota.", action: "Inspecionar boia", x: 36, z: 0, reward: 130 },
-          { type: "buoy", title: "Boia leste", detail: "Finalize a ronda na última marcação.", action: "Inspecionar boia", x: 29, z: 22, reward: 140 }
-        ]
-      },
-      {
-        title: "Embarcação suspeita",
-        description: "Uma embarcação foi vista fora da rota. Identifique a situação e comunique a base.",
-        steps: [
-          { type: "inspect", title: "Verificar embarcação", detail: "Aproxime-se e observe a embarcação sinalizada.", action: "Inspecionar embarcação", x: 34, z: 13, reward: 150 },
-          { type: "identify", title: "Confirmar identificação", detail: "Confira o segundo ponto indicado pela patrulha.", action: "Confirmar identificação", x: 25, z: 7, reward: 140 },
-          { type: "return", title: "Comunicar a base", detail: "Retorne ao ponto de apoio marítimo.", action: "Registrar retorno", x: 17, z: 0, reward: 100 }
-        ]
-      }
-    ],
-    investigator: [
-      {
-        title: "Pegadas na areia",
-        description: "Uma ocorrência precisa ser esclarecida. Reúna evidências, ouça testemunhas e registre as descobertas.",
-        steps: [
-          { type: "clue", title: "Primeira evidência", detail: "Procure uma pista perto da faixa de areia.", action: "Coletar evidência", x: -8, z: 10, reward: 120 },
-          { type: "clue", title: "Segunda evidência", detail: "Verifique o segundo ponto indicado.", action: "Coletar evidência", x: -15, z: 17, reward: 130 },
-          { type: "talk", title: "Ouvir testemunha", detail: "Converse com a pessoa que estava na área.", action: "Entrevistar testemunha", x: -20, z: 22, reward: 150 },
-          { type: "report", title: "Fechar relatório", detail: "Leve as informações ao ponto de registro.", action: "Fechar relatório", x: -31, z: 7, reward: 120 }
-        ]
-      },
-      {
-        title: "Equipamento desaparecido",
-        description: "Um equipamento sumiu da praia. Siga as pistas e converse com quem estava por perto.",
-        steps: [
-          { type: "clue", title: "Examinar a área", detail: "Procure marcas próximas ao local do desaparecimento.", action: "Examinar pista", x: -9, z: -7, reward: 120 },
-          { type: "inspect", title: "Verificar pertences", detail: "Inspecione o ponto indicado na faixa de areia.", action: "Inspecionar ponto", x: -20, z: -13, reward: 130 },
-          { type: "talk", title: "Ouvir frequentador", detail: "Converse com a pessoa que encontrou a pista.", action: "Entrevistar testemunha", x: -27, z: -18, reward: 150 },
-          { type: "report", title: "Registrar conclusão", detail: "Atualize o relatório no ponto de investigação.", action: "Fechar relatório", x: -31, z: 7, reward: 120 }
-        ]
-      },
-      {
-        title: "O caso do farol",
-        description: "Uma sequência de sinais estranhos chamou atenção. Verifique as evidências e registre a conclusão.",
-        steps: [
-          { type: "clue", title: "Sinal na costa", detail: "Examine o primeiro ponto indicado pela equipe.", action: "Coletar evidência", x: 1, z: 26, reward: 140 },
-          { type: "clue", title: "Marca perto das pedras", detail: "Procure outra pista na direção do litoral rochoso.", action: "Coletar evidência", x: -9, z: 31, reward: 150 },
-          { type: "report", title: "Finalizar investigação", detail: "Registre o resultado no ponto de investigação.", action: "Fechar relatório", x: -31, z: 7, reward: 140 }
-        ]
-      }
-    ],
-    eco: [
-      {
-        title: "Praia sem plástico",
-        description: "Recolha resíduos trazidos pela maré e verifique a qualidade da água.",
-        steps: [
-          { type: "clean", title: "Recolher resíduos", detail: "Limpe o primeiro ponto próximo à água.", action: "Recolher resíduos", x: -1, z: -18, reward: 130 },
-          { type: "clean", title: "Limpar a faixa de areia", detail: "Recolha os resíduos do segundo ponto.", action: "Recolher resíduos", x: 4, z: -4, reward: 140 },
-          { type: "sample", title: "Coletar amostra", detail: "Faça uma coleta para verificar a água.", action: "Coletar amostra", x: 10, z: 12, reward: 150 },
-          { type: "report", title: "Atualizar o posto ambiental", detail: "Registre os cuidados realizados na praia.", action: "Registrar relatório", x: -24, z: 0, reward: 100 }
-        ]
-      },
-      {
-        title: "Ninho protegido",
-        description: "Uma área de desova precisa ser protegida. Isole o local e deixe a faixa de areia limpa.",
-        steps: [
-          { type: "protect", title: "Proteger a área", detail: "Confira o ponto de proteção da fauna.", action: "Proteger área", x: 1, z: 22, reward: 160 },
-          { type: "clean", title: "Retirar resíduos próximos", detail: "Limpe a faixa ao redor sem tocar no ninho.", action: "Recolher resíduos", x: 3, z: 14, reward: 140 },
-          { type: "report", title: "Registrar proteção", detail: "Atualize o posto ambiental.", action: "Registrar relatório", x: -24, z: 0, reward: 110 }
-        ]
-      },
-      {
-        title: "Água limpa",
-        description: "Inspecione a costa, recolha resíduos e colete uma amostra para a equipe ambiental.",
-        steps: [
-          { type: "inspect", title: "Inspecionar a costa", detail: "Verifique o primeiro ponto de atenção ambiental.", action: "Inspecionar área", x: 11, z: -23, reward: 130 },
-          { type: "clean", title: "Recolher resíduos", detail: "Retire o material acumulado na faixa de areia.", action: "Recolher resíduos", x: 2, z: -27, reward: 140 },
-          { type: "sample", title: "Coletar amostra", detail: "Colete uma amostra perto da água.", action: "Coletar amostra", x: 10, z: 22, reward: 160 },
-          { type: "report", title: "Enviar relatório", detail: "Conclua o atendimento no posto ambiental.", action: "Registrar relatório", x: -24, z: 0, reward: 110 }
-        ]
-      }
-    ]
-  };
+  let MISSIONS = {};
 
   const TYPE_STYLE = {
     rescue:   { color: 0xff626b, icon: "!" },
@@ -1647,25 +1387,126 @@ button { font: inherit; }
   const mapById = (id) => MAPS.find((m) => m.id === id);
   const roleById = (id) => ROLES.find((r) => r.id === id);
 
+
+  // Validação dos arquivos de dados antes que qualquer conteúdo seja apresentado.
+  const isColor = value => typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value);
+  const isText = value => typeof value === "string" && value.trim().length > 0 && value.length <= 500;
+  const isFiniteNumber = value => typeof value === "number" && Number.isFinite(value);
+  const isId = value => typeof value === "string" && /^[a-z0-9_-]{1,40}$/.test(value);
+  const escapeHTML = value => String(value).replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
+
+  function validateData(maps, roles, missions) {
+    if (!Array.isArray(maps) || !maps.length || maps.length > 30) throw new Error("mapas.json precisa conter entre 1 e 30 mapas.");
+    if (!Array.isArray(roles) || !roles.length || roles.length > 30) throw new Error("profissoes.json precisa conter entre 1 e 30 profissões.");
+    if (!missions || typeof missions !== "object" || Array.isArray(missions)) throw new Error("missoes.json precisa ser um objeto.");
+    const mapIds = new Set(), roleIds = new Set();
+    for (const m of maps) {
+      if (!isId(m.id) || mapIds.has(m.id) || ![m.name,m.region,m.icon,m.description].every(isText) ||
+          ![m.sky,m.fog,m.sand,m.water,m.shallow].every(isColor) ||
+          !m.offset || !isFiniteNumber(m.offset.x) || !isFiniteNumber(m.offset.z))
+        throw new Error("Mapa inválido ou duplicado: " + String(m.id));
+      mapIds.add(m.id);
+    }
+    for (const r of roles) {
+      if (!isId(r.id) || roleIds.has(r.id) || ![r.name,r.icon,r.short,r.code].every(isText) ||
+          ![r.accent,r.shirt,r.pants,r.cap].every(isColor) ||
+          !isFiniteNumber(r.speed) || r.speed <= 0 || r.speed > 50 ||
+          typeof r.vehicle !== "boolean" || !Array.isArray(r.spawn) ||
+          r.spawn.length !== 2 || !r.spawn.every(isFiniteNumber))
+        throw new Error("Profissão inválida ou duplicada: " + String(r.id));
+      roleIds.add(r.id);
+    }
+    for (const id of roleIds) {
+      const list = missions[id];
+      if (!Array.isArray(list) || !list.length || list.length > 100) throw new Error("Missões ausentes para " + id);
+      for (const mission of list) {
+        if (!isText(mission.title) || !isText(mission.description) ||
+            !Array.isArray(mission.steps) || !mission.steps.length || mission.steps.length > 30)
+          throw new Error("Missão inválida em " + id);
+        for (const step of mission.steps) {
+          if (![step.type,step.title,step.detail,step.action].every(isText) ||
+              !isFiniteNumber(step.x) || !isFiniteNumber(step.z) ||
+              !isFiniteNumber(step.reward) || step.reward < 0 ||
+              (step.callSeconds !== undefined && (!isFiniteNumber(step.callSeconds) || step.callSeconds <= 0)))
+            throw new Error("Etapa inválida em " + id + ": " + String(step.title));
+        }
+      }
+    }
+    for (const key of Object.keys(missions)) if (!roleIds.has(key)) throw new Error("Missões sem profissão: " + key);
+  }
+
+  async function fetchJSON(path) {
+    const response = await fetch(path, { cache: "no-store" });
+    if (!response.ok) throw new Error(path + ": HTTP " + response.status);
+    return response.json();
+  }
+
+  function readPreferences() {
+    try {
+      const stored = JSON.parse(localStorage.getItem("wmk-litoral-preferences-v1") || "{}");
+      if (MAPS.some(m => m.id === stored.map)) selectedMap = stored.map;
+      if (ROLES.some(r => r.id === stored.role)) selectedRole = stored.role;
+    } catch (error) { console.warn("Preferências indisponíveis:", error); }
+  }
+
+  function savePreferences() {
+    try {
+      localStorage.setItem("wmk-litoral-preferences-v1",
+        JSON.stringify({ map: selectedMap, role: selectedRole }));
+    } catch (error) { console.warn("Não foi possível salvar preferências:", error); }
+  }
+
+  async function bootstrap() {
+    const start = $("startBtn");
+    start.disabled = true;
+    try {
+      if (location.protocol === "file:") {
+        throw new Error("Abra o jogo por http://localhost:8000 ou outro servidor HTTP. O navegador bloqueia a leitura dos arquivos JSON usando file://.");
+      }
+      const [maps, roles, missions] = await Promise.all([
+        fetchJSON("dados/mapas.json"), fetchJSON("dados/profissoes.json"), fetchJSON("dados/missoes.json")
+      ]);
+      validateData(maps, roles, missions);
+      MAPS = maps; ROLES = roles; MISSIONS = missions;
+      readPreferences();
+      renderSelection();
+      initThree();
+      installControls();
+      if (!renderer) throw new Error("Não foi possível inicializar WebGL no navegador.");
+      start.disabled = false;
+      $("dataStatus").textContent = "Dados carregados: " + MAPS.length + " mapas, " +
+        ROLES.length + " profissões e " +
+        Object.values(MISSIONS).reduce((sum, list) => sum + list.length, 0) + " missões.";
+    } catch (error) {
+      console.error("Falha de carregamento do jogo:", error);
+      $("dataStatus").textContent = "Falha ao carregar os arquivos de dados.";
+      $("menuError").textContent = "Erro: " + error.message;
+      $("menuError").classList.remove("hidden");
+      start.disabled = true;
+    }
+  }
+
   function renderSelection() {
     $("mapGrid").innerHTML = MAPS.map((map) => `
       <button class="map-card ${map.id === selectedMap ? "active" : ""}" type="button" data-map="${map.id}">
         <div class="map-art" style="--map-sky:${map.sky};--map-water:${map.water};--map-sand:${map.sand}">
-          <span class="map-art-icon">${map.icon}</span>
-          <span class="map-art-detail">${map.region}</span>
+          <span class="map-art-icon">${escapeHTML(map.icon)}</span>
+          <span class="map-art-detail">${escapeHTML(map.region)}</span>
         </div>
-        <strong>${map.name}</strong>
-        <small>${map.description}</small>
+        <strong>${escapeHTML(map.name)}</strong>
+        <small>${escapeHTML(map.description)}</small>
       </button>
     `).join("");
 
     $("roleGrid").innerHTML = ROLES.map((role) => `
       <button class="role-card ${role.id === selectedRole ? "active" : ""}" type="button"
         data-role="${role.id}" style="--role-accent:${role.accent}">
-        <span class="role-icon">${role.icon}</span>
+        <span class="role-icon">${escapeHTML(role.icon)}</span>
         <span>
-          <strong>${role.name}</strong>
-          <small>${role.short}</small>
+          <strong>${escapeHTML(role.name)}</strong>
+          <small>${escapeHTML(role.short)}</small>
         </span>
       </button>
     `).join("");
@@ -1673,16 +1514,18 @@ button { font: inherit; }
     $("mapGrid").querySelectorAll("[data-map]").forEach((button) => {
       button.addEventListener("click", () => {
         selectedMap = button.dataset.map;
+        savePreferences();
         renderSelection();
-        if (!active && scene) buildWorld(selectedMap);
+        if (!active && scene) createWorld(selectedMap);
       });
     });
 
     $("roleGrid").querySelectorAll("[data-role]").forEach((button) => {
       button.addEventListener("click", () => {
         selectedRole = button.dataset.role;
+        savePreferences();
         renderSelection();
-        if (!active && scene) buildWorld(selectedMap);
+        if (!active && scene) createWorld(selectedMap);
       });
     });
 
@@ -1690,8 +1533,8 @@ button { font: inherit; }
     const role = roleById(selectedRole);
     const missionCount = MISSIONS[selectedRole].length;
     $("selectionSummary").innerHTML =
-      `<strong>${role.icon} ${role.name} • ${map.name}</strong>
-       <small>${role.short} ${missionCount} roteiros de missão exclusivos para esta equipe.</small>`;
+      `<strong>${escapeHTML(role.icon)} ${escapeHTML(role.name)} • ${escapeHTML(map.name)}</strong>
+       <small>${escapeHTML(role.short)} ${missionCount} roteiros de missão exclusivos para esta equipe.</small>`;
   }
 
   function standard(color, options = {}) {
@@ -3231,13 +3074,11 @@ button { font: inherit; }
     }
   }
 
-  renderSelection();
-  initThree();
-  installControls();
+  bootstrap();
 })();
 </script>
 
-<div class="wmk-credits" aria-label="Créditos do projeto">WMK Guardiões do Litoral · v0.2.0 · <a href="mailto:walneyk@hotmail.com">Walney Moreira Klein — walneyk@hotmail.com</a></div>
+<div class="wmk-credits" aria-label="Créditos do projeto">WMK Guardiões do Litoral · v0.3.0 · <a href="mailto:walneyk@hotmail.com">Walney Moreira Klein — walneyk@hotmail.com</a></div>
 <style>.wmk-credits{position:fixed;left:10px;bottom:5px;z-index:7;font-size:10px;color:#d1e5e7;background:rgba(5,24,37,.68);padding:4px 9px;border-radius:7px;pointer-events:auto}.wmk-credits a{color:#6de2d0;text-decoration:none}@media(max-width:680px){.wmk-credits{font-size:8px;bottom:auto;top:54px;max-width:55vw}}</style>
 </body>
 </html>
