@@ -1,0 +1,15 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.join(__dirname,'..'),load=p=>fs.readFileSync(path.join(root,p),'utf8');
+const script=load('js/editor-veiculos.js'),html=load('editor-veiculos.html'),game=load('index.html');
+const marine=JSON.parse(load('dados/veiculos.json')),land=JSON.parse(load('dados/veiculos-terrestres.json'));
+new vm.Script(script,{filename:'editor-veiculos.js'});
+const start=script.indexOf('function validate(p){'),end=script.indexOf('function say(',start);
+assert.ok(start>=0&&end>start,'Validador não encontrado no editor');
+const validate=new Function('original',script.slice(start,end)+'return validate;')({marine,land});
+const copy=x=>JSON.parse(JSON.stringify(x)),preset=()=>({schemaVersion:1,marine:copy(marine),land:copy(land)});
+test('preset original valido',()=>assert.doesNotThrow(()=>validate(preset())));
+test('velocidade negativa rejeitada',()=>{const p=preset();p.marine[0].speed=-5;assert.throws(()=>validate(p),/Parâmetros inválidos/)});
+test('ID alterado rejeitado',()=>{const p=preset();p.land[0].id='novo';assert.throws(()=>validate(p),/IDs, modelos/)});
+test('spawn fora da estrada rejeitado',()=>{const p=preset();p.land[0].spawn[0]=100;assert.throws(()=>validate(p),/Spawn fora/)});
+test('integracao do editor ao jogo',()=>{assert.ok(html.includes('js/editor-veiculos.js'));assert.ok(game.includes('editor-veiculos.html'));assert.ok(game.includes('loadVehicleEditorOverrides();'));assert.ok(game.includes('wmk-litoral-editor-v1'));});
+test('frota contem cinco veiculos',()=>{assert.equal(marine.length,3);assert.equal(land.length,2)});
