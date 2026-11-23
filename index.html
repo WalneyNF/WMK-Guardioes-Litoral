@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WMK Guardiões do Litoral — Operação Verão</title>
+<title>WMK Guardiões do Litoral — Operação Verão v0.2.0</title>
 
 <style>
 :root {
@@ -1198,6 +1198,7 @@ button { font: inherit; }
     <div class="radio-status"><span class="status-dot"></span> RÁDIO ONLINE</div>
     <div id="shiftClock" class="clock-box">00:00</div>
     <button id="fullscreenBtn" class="icon-button" type="button" title="Tela cheia">⛶</button>
+    <button id="switchBtn" class="icon-button" type="button" title="Alternar profissional (Tab)" aria-label="Alternar profissional (Tab)" style="width:auto;padding:0 8px;font-size:11px;font-weight:900">⇄ TAB</button>
     <button id="pauseBtn" class="icon-button" type="button" title="Pausar">Ⅱ</button>
   </div>
 
@@ -1248,7 +1249,7 @@ button { font: inherit; }
   <div class="controls-card">
     <strong><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span></strong>
     mover &nbsp; <span class="key">SHIFT</span> correr<br>
-    <span class="key">E</span> interagir &nbsp; • &nbsp; <span class="key">ESC</span> pausar
+    <span class="key">E</span> interagir &nbsp; • &nbsp; <span class="key">ESC</span> pausar &nbsp; • &nbsp; <span class="key">TAB</span> trocar profissão
   </div>
 
   <div class="action-dock">
@@ -1601,6 +1602,8 @@ button { font: inherit; }
 
   let selectedMap = "sol";
   let selectedRole = "lifeguard";
+  let squad = Object.create(null);
+  let roleSessions = Object.create(null);
 
   let scene, camera, renderer, worldGroup;
   let player = null;
@@ -2212,25 +2215,18 @@ button { font: inherit; }
       addRock(worldGroup, 36, .6, 30, [3.0, 1.8, 3.2], "#526263");
     }
 
-    const role = roleById(selectedRole);
-    const spawn = role.spawn;
-    const actor = role.vehicle ? makeBoatActor(role) : makePerson({
-      shirt: role.shirt,
-      pants: role.pants,
-      cap: role.cap,
-      badge: role.accent
-    });
-    actor.position.set(spawn[0], 0, spawn[1]);
-    worldGroup.add(actor);
-
-    player = {
-      x: spawn[0],
-      z: spawn[1],
-      heading: 0,
-      actor,
-      role
-    };
-
+    // Unidades persistem no mundo ao trocar o profissional controlado.
+    squad = Object.create(null);
+    for (const role of ROLES) {
+      const spawn = role.spawn;
+      const actor = role.vehicle ? makeBoatActor(role) : makePerson({
+        shirt: role.shirt, pants: role.pants, cap: role.cap, badge: role.accent
+      });
+      actor.position.set(spawn[0], 0, spawn[1]);
+      worldGroup.add(actor);
+      squad[role.id] = { x: spawn[0], z: spawn[1], heading: 0, actor, role };
+    }
+    player = squad[selectedRole];
     setPreviewCamera();
   }
 
@@ -2545,6 +2541,56 @@ button { font: inherit; }
     createTarget({ ...step, x: source.x, z: source.z });
   }
 
+  function saveRoleSession() {
+    roleSessions[selectedRole] = {
+      missionIndex, stepIndex, currentMission,
+      step: state.currentStep ? { ...state.currentStep } : null,
+      rescueRemaining: state.rescueRemaining,
+      rescueLate: state.rescueLate,
+      transition: state.transition,
+      stamina: state.stamina
+    };
+  }
+
+  function switchRole() {
+    if (!active || paused || !player) return;
+    const index = ROLES.findIndex(role => role.id === selectedRole);
+    const nextRole = ROLES[(index + 1) % ROLES.length];
+    saveRoleSession();
+    clearTarget();
+    selectedRole = nextRole.id;
+    player = squad[selectedRole];
+    clearKeys();
+    const saved = roleSessions[selectedRole];
+    if (saved) {
+      missionIndex = saved.missionIndex;
+      stepIndex = saved.stepIndex;
+      currentMission = saved.currentMission;
+      state.currentStep = saved.step;
+      state.rescueRemaining = saved.rescueRemaining;
+      state.rescueLate = saved.rescueLate;
+      state.transition = saved.transition;
+      state.stamina = saved.stamina;
+      if (saved.step) {
+        const offset = mapById(selectedMap).offset;
+        createTarget({ ...saved.step, x: saved.step.x - offset.x, z: saved.step.z - offset.z });
+      }
+    } else {
+      missionIndex = 0;
+      stepIndex = 0;
+      currentMission = null;
+      state.currentStep = null;
+      state.rescueRemaining = null;
+      state.rescueLate = false;
+      state.transition = 0;
+      state.stamina = 100;
+      beginMission();
+    }
+    setCameraToPlayer();
+    updateHUD(true);
+    showToast(`Controle assumido: ${nextRole.icon} ${nextRole.name}`, "good");
+  }
+
   function beginMission() {
     const list = MISSIONS[selectedRole];
     currentMission = list[missionIndex % list.length];
@@ -2576,6 +2622,7 @@ button { font: inherit; }
     missionIndex = 0;
     stepIndex = 0;
     currentMission = null;
+    roleSessions = Object.create(null);
     active = true;
     paused = false;
     clearKeys();
@@ -2611,9 +2658,7 @@ button { font: inherit; }
   function currentDistance() {
     if (!player || !state.currentStep) return Infinity;
     const map = mapById(selectedMap);
-    const tx = state.currentStep.x + map.offset.x;
-    const tz = state.currentStep.z + map.offset.z;
-    return Math.hypot(player.x - tx, player.z - tz);
+    return Math.hypot(player.x - state.currentStep.x, player.z - state.currentStep.z);
   }
 
   function interactionRadius() {
@@ -2756,8 +2801,8 @@ button { font: inherit; }
     if (state.currentStep) {
       const px = mapX(player.x);
       const pz = mapZ(player.z);
-      const tx = mapX(state.currentStep.x + map.offset.x);
-      const tz = mapZ(state.currentStep.z + map.offset.z);
+      const tx = mapX(state.currentStep.x);
+      const tz = mapZ(state.currentStep.z);
       const pulse = 4 + Math.sin(performance.now() * .006) * 1.2;
 
       ctx.strokeStyle = "rgba(255,255,255,.24)";
@@ -2906,6 +2951,7 @@ button { font: inherit; }
     $("reportOverlay").classList.add("hidden");
     $("menu").classList.remove("hidden");
     renderSelection();
+    roleSessions = Object.create(null);
     if (scene) createWorld(selectedMap);
   }
 
@@ -3039,6 +3085,7 @@ button { font: inherit; }
 
   function installControls() {
     $("startBtn").addEventListener("click", startGame);
+    $("switchBtn").addEventListener("click", switchRole);
     $("actionBtn").addEventListener("click", interact);
     $("pauseBtn").addEventListener("click", () => togglePause());
     $("resumeBtn").addEventListener("click", () => togglePause(false));
@@ -3056,6 +3103,11 @@ button { font: inherit; }
 
     document.addEventListener("keydown", (event) => {
       const code = event.code;
+      if (code === "Tab" && active) {
+        event.preventDefault();
+        if (!event.repeat) switchRole();
+        return;
+      }
 
       const keyMap = {
         KeyW: "w", ArrowUp: "w",
@@ -3179,7 +3231,7 @@ button { font: inherit; }
 })();
 </script>
 
-<div class="wmk-credits" aria-label="Créditos do projeto">WMK Guardiões do Litoral · v0.1.0 · <a href="mailto:walneyk@hotmail.com">Walney Moreira Klein — walneyk@hotmail.com</a></div>
+<div class="wmk-credits" aria-label="Créditos do projeto">WMK Guardiões do Litoral · v0.2.0 · <a href="mailto:walneyk@hotmail.com">Walney Moreira Klein — walneyk@hotmail.com</a></div>
 <style>.wmk-credits{position:fixed;left:10px;bottom:5px;z-index:7;font-size:10px;color:#d1e5e7;background:rgba(5,24,37,.68);padding:4px 9px;border-radius:7px;pointer-events:auto}.wmk-credits a{color:#6de2d0;text-decoration:none}@media(max-width:680px){.wmk-credits{font-size:8px;bottom:auto;top:54px;max-width:55vw}}</style>
 </body>
 </html>
