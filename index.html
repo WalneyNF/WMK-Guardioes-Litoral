@@ -1,0 +1,3185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WMK Guardiões do Litoral — Operação Verão</title>
+
+<style>
+:root {
+  --navy: #081d2b;
+  --navy-2: #0d2b3b;
+  --panel: rgba(7, 24, 37, .88);
+  --panel-border: rgba(255,255,255,.13);
+  --white: #f4f8fa;
+  --muted: #a9bac5;
+  --teal: #39d1c0;
+  --orange: #ffb35d;
+  --red: #ff6f70;
+  --green: #61dfac;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #0c2a39;
+  color: var(--white);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button { font: inherit; }
+
+#game {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+#game canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hidden { display: none !important; }
+
+#menu {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  overflow-y: auto;
+  background:
+    linear-gradient(90deg, rgba(4,18,29,.94) 0%, rgba(5,22,34,.83) 54%, rgba(5,22,34,.54) 100%),
+    linear-gradient(0deg, rgba(4,18,29,.55), transparent 45%);
+}
+
+.menu-wrap {
+  width: min(1320px, 100%);
+  margin: 0 auto;
+  padding: 22px 34px 28px;
+}
+
+.menu-header,
+.hud-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-header {
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-weight: 900;
+  letter-spacing: .09em;
+  line-height: 1.02;
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #54e2ce, #149b9e);
+  box-shadow: 0 8px 24px rgba(32, 211, 191, .24);
+  font-size: 23px;
+}
+
+.brand-name {
+  font-size: 13px;
+}
+
+.brand-name small {
+  display: block;
+  margin-top: 4px;
+  color: #a3c8d2;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .24em;
+}
+
+.season-chip,
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 11px;
+  border: 1px solid rgba(255,255,255,.17);
+  border-radius: 999px;
+  background: rgba(255,255,255,.07);
+  color: #dceaf0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.season-chip .live-dot,
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 12px rgba(97,223,172,.8);
+}
+
+.hero {
+  max-width: 830px;
+  margin-bottom: 23px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #71e0d0;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 800px;
+  margin: 0;
+  font-size: clamp(34px, 5vw, 62px);
+  line-height: .99;
+  letter-spacing: -.055em;
+  text-shadow: 0 6px 30px rgba(0,0,0,.3);
+}
+
+.hero h1 span {
+  color: #6de2d0;
+}
+
+.hero-copy {
+  max-width: 660px;
+  margin: 14px 0 0;
+  color: #c1d0d8;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.menu-layout {
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.selection-panel {
+  padding: 16px;
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  background: rgba(5,20,32,.73);
+  box-shadow: 0 18px 45px rgba(0,0,0,.18);
+  backdrop-filter: blur(12px);
+}
+
+.panel-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.panel-heading h2 {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: -.02em;
+}
+
+.panel-heading p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.panel-count {
+  color: #8fa8b5;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 9px;
+}
+
+.map-card,
+.role-card {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 13px;
+  background: rgba(255,255,255,.045);
+  color: var(--white);
+  text-align: left;
+  cursor: pointer;
+  transition: .18s ease;
+}
+
+.map-card {
+  padding: 0 0 11px;
+}
+
+.map-card:hover,
+.role-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.42);
+  background: rgba(255,255,255,.08);
+}
+
+.map-card.active,
+.role-card.active {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(57,209,192,.17), 0 8px 25px rgba(0,0,0,.22);
+  background: rgba(35,150,150,.12);
+}
+
+.map-art {
+  position: relative;
+  height: 77px;
+  margin-bottom: 9px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, var(--map-sky) 0 44%, var(--map-water) 45% 76%, var(--map-sand) 77% 100%);
+}
+
+.map-art::before {
+  content: "";
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: 24%;
+  height: 13px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.35);
+  transform: rotate(-3deg);
+}
+
+.map-art::after {
+  content: "";
+  position: absolute;
+  right: 12%;
+  bottom: 12%;
+  width: 35%;
+  height: 17px;
+  border-radius: 50% 50% 0 0;
+  background: rgba(244,220,163,.82);
+  transform: rotate(-5deg);
+}
+
+.map-art-icon {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 1;
+  font-size: 22px;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,.25));
+}
+
+.map-art-detail {
+  position: absolute;
+  right: 10px;
+  top: 11px;
+  z-index: 1;
+  color: rgba(255,255,255,.88);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .15em;
+}
+
+.map-card strong,
+.map-card small {
+  display: block;
+  padding: 0 11px;
+}
+
+.map-card strong {
+  font-size: 12px;
+}
+
+.map-card small {
+  margin-top: 4px;
+  color: #a9bdc7;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: 8px;
+}
+
+.role-card {
+  min-height: 139px;
+  padding: 11px 9px;
+}
+
+.role-icon {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--role-accent) 18%, transparent);
+  font-size: 20px;
+}
+
+.role-card strong {
+  display: block;
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.role-card small {
+  display: block;
+  margin-top: 5px;
+  color: #9fb3bd;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.menu-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 15px;
+  padding: 12px 15px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 15px;
+  background: rgba(5,20,32,.7);
+  backdrop-filter: blur(10px);
+}
+
+.selection-summary {
+  min-width: 0;
+}
+
+.selection-summary strong {
+  display: block;
+  font-size: 12px;
+}
+
+.selection-summary small {
+  display: block;
+  margin-top: 4px;
+  color: #a9bac5;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.start-button,
+.primary-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #46dfc6, #12a7a8);
+  box-shadow: 0 9px 24px rgba(27,192,177,.23);
+  color: #062b35;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: .16s ease;
+}
+
+.start-button:hover,
+.primary-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.menu-controls {
+  margin: 10px 2px 0;
+  color: #a9bac5;
+  font-size: 10px;
+  text-align: right;
+}
+
+.menu-controls b { color: #edf7f9; }
+
+#menuError {
+  margin-top: 10px;
+  color: #ffd098;
+  font-size: 11px;
+}
+
+/* HUD */
+
+#hud {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  color: var(--white);
+  pointer-events: none;
+}
+
+.hud-topbar {
+  position: absolute;
+  top: 15px;
+  left: 17px;
+  right: 17px;
+  min-height: 52px;
+  padding: 8px 11px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 15px;
+  background: rgba(5,21,33,.83);
+  box-shadow: 0 8px 28px rgba(0,0,0,.18);
+  backdrop-filter: blur(12px);
+  pointer-events: auto;
+}
+
+.hud-topbar .brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  font-size: 18px;
+}
+
+.hud-topbar .brand-name { font-size: 11px; }
+.hud-topbar .brand-name small { font-size: 8px; }
+
+.hud-pills {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: 12px;
+}
+
+.pill {
+  padding: 7px 9px;
+  font-size: 9px;
+}
+
+.pill.role-pill { color: #b8f4e9; }
+
+.topbar-spacer { flex: 1; }
+
+.radio-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #b7c8d0;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.clock-box {
+  min-width: 52px;
+  padding: 7px 9px;
+  border-left: 1px solid rgba(255,255,255,.12);
+  color: #e7f5f6;
+  font-size: 11px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 10px;
+  background: rgba(255,255,255,.08);
+  color: white;
+  cursor: pointer;
+  transition: .15s ease;
+}
+
+.icon-button:hover { background: rgba(255,255,255,.17); }
+
+.mission-panel,
+.right-panel,
+.controls-card,
+.action-dock {
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 12px 35px rgba(0,0,0,.25);
+  backdrop-filter: blur(13px);
+  pointer-events: auto;
+}
+
+.mission-panel {
+  position: absolute;
+  top: 83px;
+  left: 18px;
+  width: 330px;
+  padding: 15px;
+}
+
+.card-kicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #80dccc;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+
+.mission-number {
+  color: #90a8b4;
+  font-size: 9px;
+}
+
+.mission-panel h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.12;
+  letter-spacing: -.035em;
+}
+
+.mission-description {
+  margin: 8px 0 11px;
+  color: #adbec7;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.step-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,.09);
+  color: #9cb0ba;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.progress-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.progress-dots i {
+  display: block;
+  width: 19px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255,255,255,.16);
+}
+
+.progress-dots i.done { background: var(--green); }
+.progress-dots i.current { background: #5ddccb; box-shadow: 0 0 8px rgba(93,220,203,.65); }
+
+.target-row {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 11px;
+  background: rgba(255,255,255,.045);
+}
+
+.target-symbol {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+  background: rgba(255,255,255,.1);
+  font-size: 16px;
+}
+
+.target-row strong {
+  display: block;
+  font-size: 10px;
+}
+
+.target-row small {
+  display: block;
+  margin-top: 3px;
+  color: #9eb2bd;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.urgency-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 9px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,111,112,.27);
+  border-radius: 10px;
+  background: rgba(255,111,112,.1);
+  color: #ffc4c0;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.urgency-box strong {
+  color: #fff;
+  font-size: 12px;
+}
+
+.urgency-box.critical {
+  animation: urgentPulse .65s infinite alternate;
+}
+
+@keyframes urgentPulse {
+  to { background: rgba(255,66,74,.28); border-color: rgba(255,91,97,.62); }
+}
+
+.right-stack {
+  position: absolute;
+  top: 83px;
+  right: 18px;
+  width: 257px;
+  display: grid;
+  gap: 9px;
+  pointer-events: none;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 7px;
+}
+
+.stat-box {
+  min-width: 0;
+  padding: 10px 9px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 12px;
+  background: rgba(5,21,33,.84);
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+.stat-box small {
+  display: block;
+  color: #91a8b3;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.stat-box strong {
+  display: block;
+  margin-top: 4px;
+  color: #f4fbfc;
+  font-size: 14px;
+}
+
+.right-panel {
+  padding: 11px;
+}
+
+.safety-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 7px;
+  color: #a9bdc6;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.safety-heading strong { color: #dff9ef; }
+
+.meter {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(255,255,255,.12);
+}
+
+.meter > i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f3bd62, #55dfa9);
+  transition: width .25s ease;
+}
+
+.stamina-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.stamina-line span {
+  color: #8fa9b4;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.stamina-line .meter { flex: 1; height: 4px; }
+.stamina-line .meter > i { background: linear-gradient(90deg,#f0ce72,#84e5b8); }
+
+.minimap-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 7px;
+  color: #a9bdc6;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.minimap-title span:last-child { color: #61dccc; }
+
+#mapCanvas {
+  display: block;
+  width: 100%;
+  height: 132px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 9px;
+  background: #123d4d;
+}
+
+.controls-card {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  padding: 10px 12px;
+  color: #9db2bd;
+  font-size: 9px;
+  line-height: 1.7;
+}
+
+.controls-card strong { color: white; }
+.controls-card .key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  margin: 0 2px;
+  padding: 0 4px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 5px;
+  background: rgba(255,255,255,.08);
+  color: #f3ffff;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.action-dock {
+  position: absolute;
+  left: 50%;
+  bottom: 19px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(490px, calc(100% - 400px));
+  min-height: 62px;
+  padding: 9px 11px 9px 14px;
+  transform: translateX(-50%);
+}
+
+.action-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.action-copy small {
+  display: block;
+  margin-bottom: 4px;
+  color: #82dccc;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.action-copy strong {
+  display: block;
+  overflow: hidden;
+  color: #e8f3f5;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-button {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 142px;
+  min-height: 40px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 10px;
+  background: #57ddc7;
+  color: #073038;
+  font-size: 9px;
+  font-weight: 1000;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: .16s ease;
+}
+
+.action-button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.action-button:disabled { opacity: .48; cursor: not-allowed; }
+
+.distance-arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: rgba(57,209,192,.14);
+  color: #7ce9d8;
+  font-size: 13px;
+  transform-origin: center;
+}
+
+.toast {
+  position: fixed;
+  top: 82px;
+  left: 50%;
+  z-index: 8;
+  max-width: min(460px, calc(100% - 30px));
+  padding: 11px 17px;
+  border: 1px solid rgba(255,255,255,.17);
+  border-radius: 12px;
+  background: rgba(5,24,37,.94);
+  box-shadow: 0 14px 38px rgba(0,0,0,.28);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%,-8px);
+  transition: .2s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%,0);
+}
+
+.toast.good { border-color: rgba(97,223,172,.45); }
+.toast.warn { border-color: rgba(255,179,93,.55); }
+.toast.bad { border-color: rgba(255,111,112,.55); }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(3,12,20,.62);
+  backdrop-filter: blur(8px);
+}
+
+.modal-card {
+  width: min(440px, 100%);
+  padding: 25px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 20px;
+  background: rgba(7,26,40,.97);
+  box-shadow: 0 25px 70px rgba(0,0,0,.42);
+  text-align: center;
+}
+
+.modal-icon { font-size: 32px; }
+
+.modal-card h2 {
+  margin: 10px 0 7px;
+  font-size: 25px;
+  letter-spacing: -.04em;
+}
+
+.modal-card p {
+  margin: 0 0 18px;
+  color: #aebfc8;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.secondary-button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 11px;
+  background: rgba(255,255,255,.07);
+  color: #e8f1f4;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.report-stats {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.report-stats div {
+  padding: 11px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 11px;
+  background: rgba(255,255,255,.045);
+}
+
+.report-stats small {
+  display: block;
+  color: #99aeb8;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.report-stats strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 17px;
+}
+
+.mobile-controls { display: none; }
+
+@media (max-width: 980px) {
+  .menu-layout { grid-template-columns: 1fr; }
+  .role-grid { grid-template-columns: repeat(5, minmax(0,1fr)); }  .menu-wrap { max-width: 850px; }
+}
+
+@media (max-width: 680px) {
+  #menu {
+    background: linear-gradient(180deg, rgba(4,18,29,.92), rgba(4,18,29,.86));
+  }
+
+  .menu-wrap { padding: 15px 13px 23px; }
+  .menu-header { margin-bottom: 16px; }
+  .season-chip { font-size: 8px; padding: 7px 8px; }
+  .hero { margin-bottom: 14px; }
+  .hero h1 { font-size: 39px; }
+  .hero-copy { margin-top: 9px; font-size: 12px; }
+  .selection-panel { padding: 12px; border-radius: 15px; }
+  .panel-heading h2 { font-size: 12px; }
+  .map-grid { gap: 6px; }
+  .map-art { height: 57px; }
+  .map-card strong { font-size: 10px; }
+  .map-card small { font-size: 8px; }
+  .map-card { border-radius: 10px; }
+  .role-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .role-card { min-height: 102px; display: flex; align-items: center; gap: 9px; padding: 9px; }
+  .role-icon { flex: 0 0 auto; margin: 0; width: 31px; height: 31px; font-size: 17px; }
+  .role-card strong { font-size: 10px; }
+  .role-card small { font-size: 8px; }
+  .menu-footer { align-items: stretch; flex-direction: column; }
+  .start-button { width: 100%; }
+  .menu-controls { text-align: left; }
+
+  .hud-topbar { top: 7px; left: 7px; right: 7px; gap: 7px; min-height: 45px; padding: 6px 7px; }
+  .hud-topbar .brand-icon { width: 29px; height: 29px; font-size: 15px; }
+  .hud-topbar .brand-name { font-size: 9px; }
+  .hud-pills { gap: 4px; margin-left: 3px; }
+  .pill { padding: 6px 7px; font-size: 7px; letter-spacing: .05em; }
+  .radio-status { display: none; }
+  .clock-box { font-size: 9px; min-width: 40px; padding: 6px; }
+  .icon-button { width: 30px; height: 30px; }
+
+  .mission-panel {
+    top: 61px;
+    left: 7px;
+    width: min(300px, calc(100% - 14px));
+    padding: 11px;
+    border-radius: 13px;
+  }
+
+  .mission-panel h2 { font-size: 15px; }
+  .mission-description { margin: 5px 0 7px; font-size: 9px; }
+  .step-line { margin-bottom: 7px; padding-top: 6px; }
+  .target-row { padding: 7px; }
+  .target-symbol { width: 27px; height: 27px; }
+  .target-row small { font-size: 8px; }
+  .urgency-box { margin-top: 6px; padding: 6px 8px; }
+
+  .right-stack {
+    top: auto;
+    right: 7px;
+    bottom: 102px;
+    width: 135px;
+    gap: 6px;
+  }
+
+  .stat-grid { display: none; }
+  .right-panel { padding: 8px; border-radius: 12px; }
+  #mapCanvas { height: 91px; }
+  .safety-heading { font-size: 7px; }
+  .stamina-line { margin-top: 7px; }
+
+  .controls-card { display: none; }
+
+  .action-dock {
+    bottom: 8px;
+    width: calc(100% - 14px);
+    min-height: 55px;
+    padding: 7px;
+    gap: 6px;
+    border-radius: 13px;
+  }
+
+  .action-copy { padding-left: 4px; }
+  .action-copy small { font-size: 7px; }
+  .action-copy strong { font-size: 9px; }
+  .action-button { min-width: 126px; min-height: 38px; padding: 0 8px; font-size: 8px; }
+
+  .mobile-controls {
+    position: absolute;
+    bottom: 89px;
+    left: 9px;
+    display: grid;
+    grid-template-columns: repeat(3,38px);
+    grid-template-rows: repeat(2,38px);
+    gap: 4px;
+    pointer-events: auto;
+  }
+
+  .mobile-controls button {
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 11px;
+    background: rgba(5,23,35,.72);
+    color: white;
+    font-size: 15px;
+    font-weight: 900;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .mobile-controls .empty { visibility: hidden; }
+  .mobile-controls .sprint-mobile {
+    grid-column: 3;
+    grid-row: 2;
+    font-size: 9px;
+  }
+
+  .toast { top: 58px; font-size: 10px; }
+}
+
+@media (max-width: 370px) {
+  .mission-panel { width: 250px; }
+  .right-stack { width: 112px; }
+  #mapCanvas { height: 78px; }
+  .mobile-controls { grid-template-columns: repeat(3,33px); grid-template-rows: repeat(2,33px); }
+  .action-button { min-width: 112px; }
+}
+</style>
+</head>
+
+<body>
+<div id="game"></div>
+
+<div id="menu">
+  <div class="menu-wrap">
+    <header class="menu-header">
+      <div class="brand">
+        <div class="brand-icon">⚓</div>
+        <div class="brand-name">GUARDIÕES DO LITORAL<small>OPERAÇÃO VERÃO</small></div>
+      </div>
+      <div class="season-chip"><span class="live-dot"></span> Central de operações • Verão</div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Simulação 3D de resgate e patrulha</p>
+      <h1>O verão é de todos.<br><span>Proteja cada praia.</span></h1>
+      <p class="hero-copy">
+        Assuma diferentes profissões, responda a chamados e cuide do litoral.
+        Cada turno traz novos objetivos, pessoas para ajudar e áreas para explorar.
+      </p>
+    </section>
+
+    <div class="menu-layout">
+      <section class="selection-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Escolha seu litoral</h2>
+            <p>Três regiões, três cenários diferentes.</p>
+          </div>
+          <span class="panel-count">01 / MAPAS</span>
+        </div>
+        <div id="mapGrid" class="map-grid"></div>
+      </section>
+
+      <section class="selection-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Escolha sua profissão</h2>
+            <p>Cada equipe recebe missões próprias.</p>
+          </div>
+          <span class="panel-count">02 / EQUIPE</span>
+        </div>
+        <div id="roleGrid" class="role-grid"></div>
+      </section>
+    </div>
+
+    <footer class="menu-footer">
+      <div id="selectionSummary" class="selection-summary"></div>
+      <button id="startBtn" class="start-button" type="button">Iniciar turno <span>→</span></button>
+    </footer>
+
+    <div class="menu-controls">
+      <b>WASD</b> ou setas para se mover &nbsp;•&nbsp; <b>Shift</b> para correr &nbsp;•&nbsp; <b>E</b> para interagir
+    </div>
+    <div id="menuError" class="hidden"></div>
+  </div>
+</div>
+
+<div id="hud" class="hidden">
+  <div class="hud-topbar">
+    <div class="brand">
+      <div class="brand-icon">⚓</div>
+      <div class="brand-name">GUARDIÕES<small>DO LITORAL</small></div>
+    </div>
+    <div class="hud-pills">
+      <span id="mapPill" class="pill">PRAIA</span>
+      <span id="rolePill" class="pill role-pill">EQUIPE</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="radio-status"><span class="status-dot"></span> RÁDIO ONLINE</div>
+    <div id="shiftClock" class="clock-box">00:00</div>
+    <button id="fullscreenBtn" class="icon-button" type="button" title="Tela cheia">⛶</button>
+    <button id="pauseBtn" class="icon-button" type="button" title="Pausar">Ⅱ</button>
+  </div>
+
+  <section class="mission-panel">
+    <div class="card-kicker">
+      <span>Chamado em andamento</span>
+      <span id="missionNumber" class="mission-number">TURNO 01</span>
+    </div>
+    <h2 id="missionTitle">Aguardando chamado</h2>
+    <p id="missionDesc" class="mission-description"></p>
+    <div class="step-line">
+      <span id="stageLabel">ETAPA 1 / 1</span>
+      <span id="progressDots" class="progress-dots"></span>
+    </div>
+    <div class="target-row">
+      <div id="targetSymbol" class="target-symbol">✦</div>
+      <div>
+        <strong id="currentTargetTitle">Ponto de atenção</strong>
+        <small id="currentTargetDesc">Siga o marcador no mapa.</small>
+      </div>
+    </div>
+    <div id="urgencyBox" class="urgency-box hidden">
+      <span>Tempo para o resgate</span>
+      <strong id="urgencyTime">00:00</strong>
+    </div>
+  </section>
+
+  <aside class="right-stack">
+    <div class="stat-grid">
+      <div class="stat-box"><small>Pontuação</small><strong id="scoreStat">0</strong></div>
+      <div class="stat-box"><small>Salvamentos</small><strong id="rescueStat">0</strong></div>
+      <div class="stat-box"><small>Missões</small><strong id="missionStat">0</strong></div>
+    </div>
+    <div class="right-panel">
+      <div class="safety-heading"><span>Segurança da praia</span><strong id="safetyLabel">100%</strong></div>
+      <div class="meter"><i id="safetyBar"></i></div>
+      <div class="stamina-line">
+        <span>ENERGIA</span>
+        <div class="meter"><i id="staminaBar"></i></div>
+      </div>
+    </div>
+    <div class="right-panel">
+      <div class="minimap-title"><span>Mapa da região</span><span>N ↑</span></div>
+      <canvas id="mapCanvas" width="240" height="168"></canvas>
+    </div>
+  </aside>
+
+  <div class="controls-card">
+    <strong><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span></strong>
+    mover &nbsp; <span class="key">SHIFT</span> correr<br>
+    <span class="key">E</span> interagir &nbsp; • &nbsp; <span class="key">ESC</span> pausar
+  </div>
+
+  <div class="action-dock">
+    <div class="action-copy">
+      <small><span id="directionArrow" class="distance-arrow">↑</span><span id="distanceText">Aguardando objetivo</span></small>
+      <strong id="interactionText">Siga até o marcador para iniciar.</strong>
+    </div>
+    <button id="actionBtn" class="action-button" type="button" disabled>
+      <span> E </span><span id="actionLabel">Interagir</span>
+    </button>
+  </div>
+
+  <div class="mobile-controls">
+    <button class="empty" tabindex="-1" aria-hidden="true"></button>
+    <button type="button" data-key="w" aria-label="Mover para frente">▲</button>
+    <button class="empty" tabindex="-1" aria-hidden="true"></button>
+    <button type="button" data-key="a" aria-label="Mover para esquerda">◀</button>
+    <button type="button" data-key="s" aria-label="Mover para trás">▼</button>
+    <button class="sprint-mobile" type="button" data-key="shift">CORRER</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="pauseOverlay" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-icon">⏸️</div>
+    <h2>Turno pausado</h2>
+    <p>O litoral está em segurança. Quando estiver pronto, volte para a operação.</p>
+    <div class="modal-actions">
+      <button id="resumeBtn" class="primary-button" type="button">Continuar</button>
+      <button id="endShiftBtn" class="secondary-button" type="button">Encerrar turno</button>
+    </div>
+  </div>
+</div>
+
+<div id="reportOverlay" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-icon">🏅</div>
+    <h2 id="reportGrade">Turno concluído</h2>
+    <p>Resumo da sua atuação na região.</p>
+    <div class="report-stats">
+      <div><small>Pontuação</small><strong id="reportScore">0</strong></div>
+      <div><small>Salvamentos</small><strong id="reportSaves">0</strong></div>
+      <div><small>Missões</small><strong id="reportMissions">0</strong></div>
+      <div><small>Segurança</small><strong id="reportSafety">100%</strong></div>
+    </div>
+    <div class="modal-actions">
+      <button id="returnMenuBtn" class="secondary-button" type="button">Voltar ao planejamento</button>
+      <button id="restartBtn" class="primary-button" type="button">Novo turno</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+
+  const MAPS = [
+    {
+      id: "sol",
+      name: "Praia do Sol",
+      region: "Costa Dourada",
+      icon: "☀️",
+      description: "Calçadão movimentado, quiosques e mar aberto.",
+      sky: "#a6dff0",
+      fog: "#b5d9df",
+      sand: "#e8cb8d",
+      water: "#1685a4",
+      shallow: "#52c9c7",
+      offset: { x: 0, z: 0 }
+    },
+    {
+      id: "enseada",
+      name: "Enseada Azul",
+      region: "Baía das Pedras",
+      icon: "🌊",
+      description: "Águas claras, costões e um farol histórico.",
+      sky: "#a7e6e7",
+      fog: "#b5dedb",
+      sand: "#eddaa4",
+      water: "#167c91",
+      shallow: "#56d2c6",
+      offset: { x: 1, z: 2 }
+    },
+    {
+      id: "ilha",
+      name: "Ilha Brava",
+      region: "Arquipélago Sul",
+      icon: "🏝️",
+      description: "Praia isolada, rochas vulcânicas e um naufrágio.",
+      sky: "#b4dce0",
+      fog: "#bdd7d7",
+      sand: "#cdb28a",
+      water: "#155e77",
+      shallow: "#45aa9e",
+      offset: { x: -2, z: -3 }
+    }
+  ];
+
+  const ROLES = [
+    {
+      id: "lifeguard",
+      name: "Salva-vidas",
+      icon: "🛟",
+      short: "Resgates e primeiros socorros.",
+      code: "SALVAMENTO",
+      accent: "#ff706f",
+      shirt: "#ee5555",
+      pants: "#f2ede0",
+      cap: "#f4f2e7",
+      speed: 7.5,
+      vehicle: false,
+      spawn: [-17, 0]
+    },
+    {
+      id: "police",
+      name: "Policial",
+      icon: "👮",
+      short: "Patrulha, atendimento e ocorrências.",
+      code: "POLICIAMENTO",
+      accent: "#7ca8ff",
+      shirt: "#294f85",
+      pants: "#182e49",
+      cap: "#203c67",
+      speed: 7.2,
+      vehicle: false,
+      spawn: [-23, 8]
+    },
+    {
+      id: "marine",
+      name: "Patrulha marítima",
+      icon: "🚤",
+      short: "Rondas costeiras em lancha.",
+      code: "PATRULHA MARÍTIMA",
+      accent: "#53d5c9",
+      shirt: "#f2f1e8",
+      pants: "#174a5b",
+      cap: "#e7eee9",
+      speed: 12,
+      vehicle: true,
+      spawn: [18, 0]
+    },
+    {
+      id: "investigator",
+      name: "Investigador",
+      icon: "🔎",
+      short: "Pistas, testemunhas e relatórios.",
+      code: "INVESTIGAÇÃO",
+      accent: "#e7c773",
+      shirt: "#bb9a5b",
+      pants: "#344653",
+      cap: "#4b5148",
+      speed: 7.1,
+      vehicle: false,
+      spawn: [-22, 13]
+    },
+    {
+      id: "eco",
+      name: "Fiscal ambiental",
+      icon: "🌱",
+      short: "Proteção da fauna e praia limpa.",
+      code: "MEIO AMBIENTE",
+      accent: "#79d68d",
+      shirt: "#3e9b68",
+      pants: "#385843",
+      cap: "#34734e",
+      speed: 7.2,
+      vehicle: false,
+      spawn: [-16, -8]
+    }
+  ];
+
+  const MISSIONS = {
+    lifeguard: [
+      {
+        title: "Socorro na arrebentação",
+        description: "Um banhista está em dificuldade. Chegue rápido, faça o resgate e complete o atendimento.",
+        steps: [
+          { type: "rescue", title: "Banhista em dificuldade", detail: "A pessoa está sinalizando por ajuda no mar.", action: "Resgatar banhista", x: 21, z: -12, callSeconds: 65, reward: 190 },
+          { type: "aid", title: "Primeiros socorros", detail: "Leve o atendimento até a faixa de areia.", action: "Prestar atendimento", x: -1, z: -11, reward: 130 },
+          { type: "flag", title: "Reforçar área segura", detail: "Confira a sinalização na torre de salvamento.", action: "Conferir sinalização", x: -6, z: 0, reward: 100 }
+        ]
+      },
+      {
+        title: "Correnteza forte",
+        description: "O mar ficou agitado. Oriente os banhistas e responda ao novo alerta de salvamento.",
+        steps: [
+          { type: "warn", title: "Orientar os banhistas", detail: "Avise o grupo próximo à zona de correnteza.", action: "Orientar banhistas", x: 2, z: 14, reward: 110 },
+          { type: "rescue", title: "Resgate na zona de risco", detail: "Há uma pessoa pedindo ajuda além da arrebentação.", action: "Resgatar banhista", x: 24, z: 15, callSeconds: 62, reward: 200 },
+          { type: "report", title: "Retornar à torre", detail: "Registre o atendimento e prepare a próxima ronda.", action: "Registrar ocorrência", x: -6, z: 0, reward: 100 }
+        ]
+      },
+      {
+        title: "Criança perdida",
+        description: "Uma família procurou a equipe. Localize a criança e acompanhe-a até o ponto de encontro.",
+        steps: [
+          { type: "findchild", title: "Localizar a criança", detail: "Procure perto das toalhas e dos guarda-sóis.", action: "Acolher criança", x: -21, z: -27, reward: 130 },
+          { type: "escort", title: "Ponto de encontro", detail: "A família aguarda perto do calçadão.", action: "Reunir com a família", x: -13, z: -23, reward: 160 },
+          { type: "report", title: "Atualizar a torre", detail: "Avise a equipe que a ocorrência foi resolvida.", action: "Registrar ocorrência", x: -6, z: 0, reward: 90 }
+        ]
+      }
+    ],
+    police: [
+      {
+        title: "Confusão no quiosque",
+        description: "Uma discussão está incomodando os banhistas. Acalme a situação e converse com uma testemunha.",
+        steps: [
+          { type: "intervene", title: "Atender a ocorrência", detail: "Converse com as pessoas e encerre a discussão sem violência.", action: "Acalmar a situação", x: -13, z: 10, reward: 170 },
+          { type: "talk", title: "Ouvir testemunha", detail: "Uma pessoa próxima pode ajudar a esclarecer o chamado.", action: "Conversar com testemunha", x: -21, z: 0, reward: 120 },
+          { type: "report", title: "Registrar ocorrência", detail: "Leve o resumo até o posto de patrulha.", action: "Registrar ocorrência", x: -31, z: 5, reward: 100 }
+        ]
+      },
+      {
+        title: "Objeto suspeito",
+        description: "Um item foi deixado sem identificação. Verifique a área, fale com os presentes e comunique o posto.",
+        steps: [
+          { type: "inspect", title: "Verificar o objeto", detail: "Inspecione o cooler deixado sem identificação.", action: "Inspecionar objeto", x: -13, z: -13, reward: 140 },
+          { type: "talk", title: "Conversar com frequentadores", detail: "Pergunte se alguém viu quem deixou o objeto.", action: "Conversar com testemunha", x: -20, z: -20, reward: 120 },
+          { type: "report", title: "Comunicar o posto", detail: "Atualize o registro da equipe de patrulha.", action: "Registrar ocorrência", x: -31, z: 5, reward: 100 }
+        ]
+      },
+      {
+        title: "Patrulha do calçadão",
+        description: "Faça uma ronda preventiva, confira um ponto de atenção e retorne ao posto.",
+        steps: [
+          { type: "patrol", title: "Ponto norte", detail: "Confira o trecho mais movimentado do calçadão.", action: "Conferir ponto", x: -30, z: -24, reward: 110 },
+          { type: "inspect", title: "Área das barracas", detail: "Verifique se a passagem está livre para os pedestres.", action: "Inspecionar área", x: -7, z: -28, reward: 130 },
+          { type: "report", title: "Retorno ao posto", detail: "Conclua a ronda no posto de patrulha.", action: "Registrar ronda", x: -31, z: 5, reward: 100 }
+        ]
+      }
+    ],
+    marine: [
+      {
+        title: "Embarcação à deriva",
+        description: "Uma embarcação precisa de assistência. Faça a ronda, aproxime-se e acompanhe o retorno seguro.",
+        steps: [
+          { type: "patrol", title: "Localizar embarcação", detail: "Siga até o ponto sinalizado pela equipe costeira.", action: "Conferir posição", x: 29, z: -19, reward: 130 },
+          { type: "assist", title: "Prestar assistência", detail: "Aproxime-se da embarcação para oferecer ajuda.", action: "Auxiliar embarcação", x: 36, z: -8, reward: 190 },
+          { type: "return", title: "Retornar à base", detail: "Conclua o chamado no ponto de apoio marítimo.", action: "Registrar retorno", x: 17, z: 0, reward: 100 }
+        ]
+      },
+      {
+        title: "Rota das boias",
+        description: "Faça uma ronda pelas boias de segurança e confirme que a rota está sinalizada.",
+        steps: [
+          { type: "buoy", title: "Boia oeste", detail: "Inspecione a primeira marcação da rota.", action: "Inspecionar boia", x: 27, z: -23, reward: 120 },
+          { type: "buoy", title: "Boia central", detail: "Confira a sinalização no centro da rota.", action: "Inspecionar boia", x: 36, z: 0, reward: 130 },
+          { type: "buoy", title: "Boia leste", detail: "Finalize a ronda na última marcação.", action: "Inspecionar boia", x: 29, z: 22, reward: 140 }
+        ]
+      },
+      {
+        title: "Embarcação suspeita",
+        description: "Uma embarcação foi vista fora da rota. Identifique a situação e comunique a base.",
+        steps: [
+          { type: "inspect", title: "Verificar embarcação", detail: "Aproxime-se e observe a embarcação sinalizada.", action: "Inspecionar embarcação", x: 34, z: 13, reward: 150 },
+          { type: "identify", title: "Confirmar identificação", detail: "Confira o segundo ponto indicado pela patrulha.", action: "Confirmar identificação", x: 25, z: 7, reward: 140 },
+          { type: "return", title: "Comunicar a base", detail: "Retorne ao ponto de apoio marítimo.", action: "Registrar retorno", x: 17, z: 0, reward: 100 }
+        ]
+      }
+    ],
+    investigator: [
+      {
+        title: "Pegadas na areia",
+        description: "Uma ocorrência precisa ser esclarecida. Reúna evidências, ouça testemunhas e registre as descobertas.",
+        steps: [
+          { type: "clue", title: "Primeira evidência", detail: "Procure uma pista perto da faixa de areia.", action: "Coletar evidência", x: -8, z: 10, reward: 120 },
+          { type: "clue", title: "Segunda evidência", detail: "Verifique o segundo ponto indicado.", action: "Coletar evidência", x: -15, z: 17, reward: 130 },
+          { type: "talk", title: "Ouvir testemunha", detail: "Converse com a pessoa que estava na área.", action: "Entrevistar testemunha", x: -20, z: 22, reward: 150 },
+          { type: "report", title: "Fechar relatório", detail: "Leve as informações ao ponto de registro.", action: "Fechar relatório", x: -31, z: 7, reward: 120 }
+        ]
+      },
+      {
+        title: "Equipamento desaparecido",
+        description: "Um equipamento sumiu da praia. Siga as pistas e converse com quem estava por perto.",
+        steps: [
+          { type: "clue", title: "Examinar a área", detail: "Procure marcas próximas ao local do desaparecimento.", action: "Examinar pista", x: -9, z: -7, reward: 120 },
+          { type: "inspect", title: "Verificar pertences", detail: "Inspecione o ponto indicado na faixa de areia.", action: "Inspecionar ponto", x: -20, z: -13, reward: 130 },
+          { type: "talk", title: "Ouvir frequentador", detail: "Converse com a pessoa que encontrou a pista.", action: "Entrevistar testemunha", x: -27, z: -18, reward: 150 },
+          { type: "report", title: "Registrar conclusão", detail: "Atualize o relatório no ponto de investigação.", action: "Fechar relatório", x: -31, z: 7, reward: 120 }
+        ]
+      },
+      {
+        title: "O caso do farol",
+        description: "Uma sequência de sinais estranhos chamou atenção. Verifique as evidências e registre a conclusão.",
+        steps: [
+          { type: "clue", title: "Sinal na costa", detail: "Examine o primeiro ponto indicado pela equipe.", action: "Coletar evidência", x: 1, z: 26, reward: 140 },
+          { type: "clue", title: "Marca perto das pedras", detail: "Procure outra pista na direção do litoral rochoso.", action: "Coletar evidência", x: -9, z: 31, reward: 150 },
+          { type: "report", title: "Finalizar investigação", detail: "Registre o resultado no ponto de investigação.", action: "Fechar relatório", x: -31, z: 7, reward: 140 }
+        ]
+      }
+    ],
+    eco: [
+      {
+        title: "Praia sem plástico",
+        description: "Recolha resíduos trazidos pela maré e verifique a qualidade da água.",
+        steps: [
+          { type: "clean", title: "Recolher resíduos", detail: "Limpe o primeiro ponto próximo à água.", action: "Recolher resíduos", x: -1, z: -18, reward: 130 },
+          { type: "clean", title: "Limpar a faixa de areia", detail: "Recolha os resíduos do segundo ponto.", action: "Recolher resíduos", x: 4, z: -4, reward: 140 },
+          { type: "sample", title: "Coletar amostra", detail: "Faça uma coleta para verificar a água.", action: "Coletar amostra", x: 10, z: 12, reward: 150 },
+          { type: "report", title: "Atualizar o posto ambiental", detail: "Registre os cuidados realizados na praia.", action: "Registrar relatório", x: -24, z: 0, reward: 100 }
+        ]
+      },
+      {
+        title: "Ninho protegido",
+        description: "Uma área de desova precisa ser protegida. Isole o local e deixe a faixa de areia limpa.",
+        steps: [
+          { type: "protect", title: "Proteger a área", detail: "Confira o ponto de proteção da fauna.", action: "Proteger área", x: 1, z: 22, reward: 160 },
+          { type: "clean", title: "Retirar resíduos próximos", detail: "Limpe a faixa ao redor sem tocar no ninho.", action: "Recolher resíduos", x: 3, z: 14, reward: 140 },
+          { type: "report", title: "Registrar proteção", detail: "Atualize o posto ambiental.", action: "Registrar relatório", x: -24, z: 0, reward: 110 }
+        ]
+      },
+      {
+        title: "Água limpa",
+        description: "Inspecione a costa, recolha resíduos e colete uma amostra para a equipe ambiental.",
+        steps: [
+          { type: "inspect", title: "Inspecionar a costa", detail: "Verifique o primeiro ponto de atenção ambiental.", action: "Inspecionar área", x: 11, z: -23, reward: 130 },
+          { type: "clean", title: "Recolher resíduos", detail: "Retire o material acumulado na faixa de areia.", action: "Recolher resíduos", x: 2, z: -27, reward: 140 },
+          { type: "sample", title: "Coletar amostra", detail: "Colete uma amostra perto da água.", action: "Coletar amostra", x: 10, z: 22, reward: 160 },
+          { type: "report", title: "Enviar relatório", detail: "Conclua o atendimento no posto ambiental.", action: "Registrar relatório", x: -24, z: 0, reward: 110 }
+        ]
+      }
+    ]
+  };
+
+  const TYPE_STYLE = {
+    rescue:   { color: 0xff626b, icon: "!" },
+    aid:      { color: 0x48d6aa, icon: "+" },
+    flag:     { color: 0xffc85f, icon: "!" },
+    warn:     { color: 0xff9870, icon: "!" },
+    report:   { color: 0x5bd7c6, icon: "✓" },
+    talk:     { color: 0x6db7ff, icon: "?" },
+    intervene:{ color: 0xff786d, icon: "!" },
+    inspect:  { color: 0xffc766, icon: "⌕" },
+    patrol:   { color: 0x62d7d0, icon: "◉" },
+    buoy:     { color: 0x67d9cf, icon: "◉" },
+    assist:   { color: 0x5acbda, icon: "!" },
+    return:   { color: 0x66d6aa, icon: "⌂" },
+    identify: { color: 0x8caeff, icon: "?" },
+    clue:     { color: 0xf0cc68, icon: "⌕" },
+    clean:    { color: 0x7cdb8b, icon: "✓" },
+    sample:   { color: 0x74d8ca, icon: "+" },
+    protect:  { color: 0x8ce08d, icon: "♥" },
+    findchild:{ color: 0xffc466, icon: "!" },
+    escort:   { color: 0x78d8ad, icon: "→" }
+  };
+
+  let selectedMap = "sol";
+  let selectedRole = "lifeguard";
+
+  let scene, camera, renderer, worldGroup;
+  let player = null;
+  let waterMesh = null;
+  let waterBase = null;
+  let ripples = [];
+  let targetGroup = null;
+  let markerFloat = null;
+  let currentMission = null;
+  let missionIndex = 0;
+  let stepIndex = 0;
+  let active = false;
+  let paused = false;
+  let uiTimer = 0;
+  let toastTimer = null;
+  let lastTime = performance.now();
+
+  const keys = { w: false, a: false, s: false, d: false, shift: false };
+
+  let state = {
+    score: 0,
+    rescues: 0,
+    missionsCompleted: 0,
+    cases: 0,
+    cleanups: 0,
+    safety: 100,
+    stamina: 100,
+    elapsed: 0,
+    transition: 0,
+    currentStep: null,
+    rescueRemaining: null,
+    rescueLate: false
+  };
+
+  const mapById = (id) => MAPS.find((m) => m.id === id);
+  const roleById = (id) => ROLES.find((r) => r.id === id);
+
+  function renderSelection() {
+    $("mapGrid").innerHTML = MAPS.map((map) => `
+      <button class="map-card ${map.id === selectedMap ? "active" : ""}" type="button" data-map="${map.id}">
+        <div class="map-art" style="--map-sky:${map.sky};--map-water:${map.water};--map-sand:${map.sand}">
+          <span class="map-art-icon">${map.icon}</span>
+          <span class="map-art-detail">${map.region}</span>
+        </div>
+        <strong>${map.name}</strong>
+        <small>${map.description}</small>
+      </button>
+    `).join("");
+
+    $("roleGrid").innerHTML = ROLES.map((role) => `
+      <button class="role-card ${role.id === selectedRole ? "active" : ""}" type="button"
+        data-role="${role.id}" style="--role-accent:${role.accent}">
+        <span class="role-icon">${role.icon}</span>
+        <span>
+          <strong>${role.name}</strong>
+          <small>${role.short}</small>
+        </span>
+      </button>
+    `).join("");
+
+    $("mapGrid").querySelectorAll("[data-map]").forEach((button) => {
+      button.addEventListener("click", () => {
+        selectedMap = button.dataset.map;
+        renderSelection();
+        if (!active && scene) buildWorld(selectedMap);
+      });
+    });
+
+    $("roleGrid").querySelectorAll("[data-role]").forEach((button) => {
+      button.addEventListener("click", () => {
+        selectedRole = button.dataset.role;
+        renderSelection();
+        if (!active && scene) buildWorld(selectedMap);
+      });
+    });
+
+    const map = mapById(selectedMap);
+    const role = roleById(selectedRole);
+    const missionCount = MISSIONS[selectedRole].length;
+    $("selectionSummary").innerHTML =
+      `<strong>${role.icon} ${role.name} • ${map.name}</strong>
+       <small>${role.short} ${missionCount} roteiros de missão exclusivos para esta equipe.</small>`;
+  }
+
+  function standard(color, options = {}) {
+    return new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.78,
+      metalness: 0.02,
+      ...options
+    });
+  }
+
+  function basic(color, options = {}) {
+    return new THREE.MeshBasicMaterial({ color, ...options });
+  }
+
+  function addBox(parent, w, h, d, color, x, y, z, options = {}) {
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(w, h, d),
+      options.material || standard(color, options.materialOptions || {})
+    );
+    mesh.position.set(x, y, z);
+    if (options.rotationY) mesh.rotation.y = options.rotationY;
+    if (options.rotationX) mesh.rotation.x = options.rotationX;
+    if (options.rotationZ) mesh.rotation.z = options.rotationZ;
+    mesh.castShadow = options.castShadow !== false;
+    mesh.receiveShadow = options.receiveShadow !== false;
+    parent.add(mesh);
+    return mesh;
+  }
+
+  function addCylinder(parent, radiusTop, radiusBottom, height, color, x, y, z, segments = 10, options = {}) {
+    const mesh = new THREE.Mesh(
+      new THREE.CylinderGeometry(radiusTop, radiusBottom, height, segments),
+      options.material || standard(color, options.materialOptions || {})
+    );
+    mesh.position.set(x, y, z);
+    if (options.rotationX) mesh.rotation.x = options.rotationX;
+    if (options.rotationZ) mesh.rotation.z = options.rotationZ;
+    mesh.castShadow = options.castShadow !== false;
+    mesh.receiveShadow = options.receiveShadow !== false;
+    parent.add(mesh);
+    return mesh;
+  }
+
+  function addPlane(parent, width, depth, color, x, y, z, options = {}) {
+    const mesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(width, depth),
+      options.material || standard(color, options.materialOptions || {})
+    );
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(x, y, z);
+    mesh.receiveShadow = options.receiveShadow !== false;
+    parent.add(mesh);
+    return mesh;
+  }
+
+  function cylinderBetween(parent, start, end, radiusBottom, radiusTop, color, segments = 8) {
+    const direction = end.clone().sub(start);
+    const length = direction.length();
+    const mesh = new THREE.Mesh(
+      new THREE.CylinderGeometry(radiusTop, radiusBottom, length, segments),
+      standard(color)
+    );
+    mesh.position.copy(start).add(end).multiplyScalar(.5);
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+    mesh.castShadow = true;
+    parent.add(mesh);
+    return mesh;
+  }
+
+  function makeSandTexture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 256, 256);
+
+    for (let i = 0; i < 1250; i++) {
+      const x = Math.random() * 256;
+      const y = Math.random() * 256;
+      const r = Math.random() * 1.2 + .2;
+      ctx.fillStyle = Math.random() > .5
+        ? "rgba(105,83,46,.10)"
+        : "rgba(255,255,255,.32)";
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(10, 17);
+    texture.encoding = THREE.sRGBEncoding;
+    return texture;
+  }
+
+  function seededRandom(seed) {
+    let value = seed;
+    for (let i = 0; i < seed.length; i++) value = (value * 31 + seed.charCodeAt(i)) >>> 0;
+    return () => {
+      value = (value * 1664525 + 1013904223) >>> 0;
+      return value / 4294967296;
+    };
+  }
+
+  function makePerson(look = {}) {
+    const group = new THREE.Group();
+    const skin = standard(look.skin || "#d6a67d");
+    const shirt = standard(look.shirt || "#ef684f");
+    const pants = standard(look.pants || "#344957");
+    const shoe = standard(look.shoes || "#26333a");
+    const capColor = look.cap || "#f5f2e7";
+    const legs = [];
+    const arms = [];
+
+    addCylinder(group, .10, .12, .18, look.skin || "#d6a67d", 0, 1.72, 0, 8);
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(.29, .37, .78, 9), shirt);
+    torso.position.set(0, 1.30, 0);
+    torso.castShadow = true;
+    group.add(torso);
+
+    const belt = new THREE.Mesh(new THREE.CylinderGeometry(.35, .35, .10, 9), standard(look.belt || "#354448"));
+    belt.position.set(0, .91, 0);
+    group.add(belt);
+
+    const head = new THREE.Mesh(new THREE.SphereGeometry(.245, 12, 10), skin);
+    head.position.set(0, 1.98, 0);
+    head.castShadow = true;
+    group.add(head);
+
+    const hair = new THREE.Mesh(
+      new THREE.SphereGeometry(.252, 10, 7, 0, Math.PI * 2, 0, Math.PI * .48),
+      standard(look.hair || "#4a3529")
+    );
+    hair.position.set(0, 2.05, 0);
+    group.add(hair);
+
+    if (look.cap !== false) {
+      const hat = new THREE.Mesh(new THREE.CylinderGeometry(.23, .25, .12, 10), standard(capColor));
+      hat.position.set(0, 2.20, 0);
+      hat.castShadow = true;
+      group.add(hat);
+      const brim = new THREE.Mesh(new THREE.BoxGeometry(.42, .035, .27), standard(capColor));
+      brim.position.set(0, 2.15, .10);
+      group.add(brim);
+    }
+
+    for (const side of [-1, 1]) {
+      const legPivot = new THREE.Group();
+      legPivot.position.set(side * .17, .88, 0);
+      group.add(legPivot);
+
+      const legMesh = new THREE.Mesh(new THREE.CylinderGeometry(.115, .14, .73, 7), pants);
+      legMesh.position.y = -.365;
+      legMesh.castShadow = true;
+      legPivot.add(legMesh);
+
+      const boot = new THREE.Mesh(new THREE.BoxGeometry(.24, .15, .36), shoe);
+      boot.position.set(0, -.72, .08);
+      legPivot.add(boot);
+      legs.push(legPivot);
+
+      const armPivot = new THREE.Group();
+      armPivot.position.set(side * .37, 1.57, 0);
+      armPivot.rotation.z = side * -.12;
+      group.add(armPivot);
+
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(.105, .12, .64, 7), shirt);
+      arm.position.y = -.29;
+      arm.castShadow = true;
+      armPivot.add(arm);
+
+      const hand = new THREE.Mesh(new THREE.SphereGeometry(.105, 8, 6), skin);
+      hand.position.y = -.62;
+      armPivot.add(hand);
+      arms.push(armPivot);
+    }
+
+    const badge = new THREE.Mesh(new THREE.BoxGeometry(.12, .15, .025), standard(look.badge || "#f1c96c"));
+    badge.position.set(.13, 1.40, .32);
+    group.add(badge);
+
+    group.userData.limbs = { legs, arms };
+    group.userData.runAmount = 0;
+    return group;
+  }
+
+  function makeBoatActor(role) {
+    const group = new THREE.Group();
+
+    const hull = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 16, 10),
+      standard("#e4f0e9", { roughness: .42 })
+    );
+    hull.scale.set(.82, .30, 1.62);
+    hull.position.y = .43;
+    hull.castShadow = true;
+    group.add(hull);
+
+    addBox(group, 1.18, .13, 2.25, "#e77a43", 0, .47, 0);
+    addBox(group, .72, .58, .55, "#236e80", 0, .78, -.45);
+    addBox(group, .84, .12, .37, "#f0f0e8", 0, 1.08, -.45);
+
+    const driver = makePerson({ shirt: role.shirt, pants: role.pants, cap: role.cap, badge: "#4bd8c8" });
+    driver.scale.setScalar(.58);
+    driver.position.set(0, .44, .20);
+    group.add(driver);
+
+    for (const side of [-1, 1]) {
+      addBox(group, .09, .18, .7, "#f4efe2", side * .57, .59, .38);
+    }
+
+    group.userData.isBoat = true;
+    group.userData.limbs = driver.userData.limbs;
+    group.userData.driver = driver;
+    return group;
+  }
+
+  function addPalm(parent, x, z, height = 5.3) {
+    const trunkStart = new THREE.Vector3(x, 0, z);
+    const crown = new THREE.Vector3(x + .45, height, z);
+    cylinderBetween(parent, trunkStart, crown, .28, .16, "#77583a", 8);
+
+    for (let i = 0; i < 8; i++) {
+      const angle = (Math.PI * 2 * i) / 8;
+      const direction = new THREE.Vector3(Math.cos(angle) * 1.65, -.3 + Math.sin(i * 2) * .12, Math.sin(angle) * 1.65);
+      const leaf = new THREE.Mesh(new THREE.ConeGeometry(.23, 3.25, 5), standard(i % 2 ? "#2c8053" : "#388d5a"));
+      leaf.position.copy(crown).add(direction.clone().multiplyScalar(.65));
+      leaf.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize());
+      leaf.castShadow = true;
+      parent.add(leaf);
+    }
+
+    const coconutMat = standard("#705038");
+    for (let i = 0; i < 3; i++) {
+      const coconut = new THREE.Mesh(new THREE.SphereGeometry(.14, 7, 6), coconutMat);
+      coconut.position.set(crown.x + Math.cos(i * 2.1) * .2, crown.y - .12, crown.z + Math.sin(i * 2.1) * .2);
+      parent.add(coconut);
+    }
+  }
+
+  function addUmbrella(parent, x, z, color) {
+    addCylinder(parent, .055, .075, 1.8, "#ede1bd", x, .9, z, 8);
+    const canopy = new THREE.Mesh(
+      new THREE.CylinderGeometry(.14, 1.18, .42, 10),
+      standard(color, { roughness: .82 })
+    );
+    canopy.position.set(x, 1.94, z);
+    canopy.castShadow = true;
+    parent.add(canopy);
+
+    addBox(parent, .92, .08, .43, "#bf8f58", x - .9, .42, z + .95, { rotationX: -.11 });
+    addBox(parent, .10, .46, .10, "#765b43", x - 1.27, .25, z + .95);
+    addBox(parent, .10, .46, .10, "#765b43", x - .53, .25, z + .95);
+    addBox(parent, .10, .46, .10, "#765b43", x - 1.27, .25, z + 1.25);
+    addBox(parent, .10, .46, .10, "#765b43", x - .53, .25, z + 1.25);
+  }
+
+  function addTower(parent) {
+    const x = -6;
+    const z = 0;
+    const wood = "#9d7047";
+
+    for (const sx of [-1, 1]) {
+      for (const sz of [-1, 1]) {
+        addBox(parent, .15, 2.25, .15, wood, x + sx * .95, 1.12, z + sz * .7);
+      }
+    }
+
+    addBox(parent, 2.65, .25, 2.1, "#c18a54", x, 2.30, z);
+    addBox(parent, 2.0, .55, .07, "#e8e0c6", x, 2.73, z - .77);
+    addBox(parent, 2.0, .55, .07, "#e8e0c6", x, 2.73, z + .77);
+    addBox(parent, 3.0, .16, 2.5, "#d65250", x, 3.34, z);
+    addBox(parent, .10, 1.75, .10, wood, x - 1.32, .94, z + 1.15);
+    addBox(parent, .10, 1.75, .10, wood, x - .77, .94, z + 1.15);
+
+    for (let i = 0; i < 6; i++) {
+      addBox(parent, .68, .07, .08, "#d4a36a", x - 1.05, .22 + i * .26, z + 1.15);
+    }
+
+    addBox(parent, 1.3, .52, .12, "#e85d5b", x, 1.30, z + 1.08);
+    addBox(parent, .4, .4, .14, "#f4ead7", x, 1.30, z + 1.17);
+  }
+
+  function addKiosk(parent, x, z, color = "#d77c48") {
+    addBox(parent, 2.9, 1.9, 2.1, "#e9d1a2", x, .95, z);
+    addBox(parent, 3.35, .20, 2.5, color, x, 2.02, z);
+    addBox(parent, 1.5, .65, .12, "#4c776d", x, 1.30, z + 1.08);
+    addBox(parent, 1.0, .12, .55, "#906341", x, .65, z + 1.27);
+    addBox(parent, .12, .9, .12, "#7c583c", x - 1.25, 1.35, z + 1.0);
+    addBox(parent, .12, .9, .12, "#7c583c", x + 1.25, 1.35, z + 1.0);
+  }
+
+  function addRock(parent, x, y, z, scale = [2, 1.4, 1.8], color = "#707d78") {
+    const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(1, 0), standard(color, { roughness: 1 }));
+    rock.position.set(x, y, z);
+    rock.scale.set(...scale);
+    rock.rotation.set(.12, Math.random() * Math.PI, .08);
+    rock.castShadow = true;
+    rock.receiveShadow = true;
+    parent.add(rock);
+    return rock;
+  }
+
+  function addLighthouse(parent, x, z) {
+    addCylinder(parent, 1.00, 1.28, 6.5, "#efe9d9", x, 3.25, z, 12);
+    addCylinder(parent, 1.02, 1.05, .55, "#d8564e", x, 2.3, z, 12);
+    addCylinder(parent, .98, 1.02, .48, "#d8564e", x, 4.4, z, 12);
+    addCylinder(parent, .78, .98, .42, "#3a4c51", x, 6.65, z, 10);
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(1.12, .95, 10), standard("#b94f46"));
+    roof.position.set(x, 7.3, z);
+    roof.castShadow = true;    parent.add(roof);
+    addBox(parent, .7, .74, .08, "#9ce5e2", x, 6.66, z + .91, {
+      materialOptions: { emissive: "#4b9a96", emissiveIntensity: .25 }
+    });
+  }
+
+  function addPier(parent, z, length = 10) {
+    for (let i = 0; i < length; i++) {
+      const x = 5.5 + i * 1.05;
+      addBox(parent, 1.12, .20, 2.6, i % 2 ? "#9a704a" : "#ac8054", x, .32, z);
+      for (const sz of [-1, 1]) {
+        addCylinder(parent, .09, .12, 1.1, "#705338", x, -.02, z + sz * .9, 7);
+      }
+    }
+    for (const sz of [-1, 1]) {
+      addBox(parent, .10, .85, length * 1.05, "#87623e", 5.5 + (length - 1) * .52, .72, z + sz * 1.2);
+    }
+  }
+
+  function addWreck(parent, x, z) {
+    const wreck = new THREE.Group();
+    wreck.position.set(x, 0, z);
+    parent.add(wreck);
+
+    addBox(wreck, 2.7, .45, 5.2, "#765a41", 0, .55, 0, { rotationY: -.22 });
+    addBox(wreck, 2.2, .32, 2.1, "#916c46", .1, .92, -.65, { rotationY: -.22 });
+    addCylinder(wreck, .08, .13, 4.0, "#74573f", -.2, 2.6, .2, 7, { rotationZ: -.12 });
+    addBox(wreck, .12, 2.0, .12, "#6f533d", -.2, 2.3, .2, { rotationZ: -.12 });
+    for (let i = 0; i < 4; i++) {
+      addBox(wreck, .12, .15, 2.0, "#b58a5a", -1.1 + i * .65, .82, .3, { rotationY: -.2 });
+    }
+  }
+
+  function addBeachChair(parent, x, z, color) {
+    addBox(parent, .86, .09, 1.4, color, x, .48, z, { rotationX: -.12 });
+    addBox(parent, .09, .58, .09, "#7c6145", x - .34, .25, z - .48);
+    addBox(parent, .09, .58, .09, "#7c6145", x + .34, .25, z - .48);
+    addBox(parent, .09, .58, .09, "#7c6145", x - .34, .25, z + .48);
+    addBox(parent, .09, .58, .09, "#7c6145", x + .34, .25, z + .48);
+  }
+
+  function addVolleyball(parent) {
+    addCylinder(parent, .07, .08, 2.2, "#f0e8d1", -3, 1.1, 26, 8);
+    addCylinder(parent, .07, .08, 2.2, "#f0e8d1", 3, 1.1, 26, 8);
+    addBox(parent, 5.8, 1.0, .05, "#e8eee8", 0, 1.43, 26, {
+      materialOptions: { transparent: true, opacity: .42 }
+    });
+    addBox(parent, .05, .08, .08, "#e8eee8", 0, 1.92, 26);
+  }
+
+  function addBuilding(parent, z, height, color, nameColor) {
+    const x = -44.5;
+    const width = 5.7;
+    const depth = 9.5;
+    addBox(parent, width, height, depth, color, x, height / 2, z);
+    addBox(parent, width + .25, .42, depth + .35, nameColor, x, height + .2, z);
+
+    for (let level = 0; level < Math.max(1, Math.floor(height / 2.2)); level++) {
+      for (let j = 0; j < 3; j++) {
+        addBox(parent, .08, .75, 1.2, "#90c5ca", -41.62, 1.0 + level * 2.0, z - 3.0 + j * 3.0, {
+          materialOptions: { emissive: "#356f78", emissiveIntensity: .12 }
+        });
+      }
+    }
+  }
+
+  function createWorld(mapId) {
+    const map = mapById(mapId);
+    const rand = seededRandom(map.id);
+
+    if (worldGroup) {
+      disposeTree(worldGroup);
+      scene.remove(worldGroup);
+    }
+
+    worldGroup = new THREE.Group();
+    scene.add(worldGroup);
+    waterMesh = null;
+    waterBase = null;
+    ripples = [];
+    targetGroup = null;
+    markerFloat = null;
+
+    scene.background = new THREE.Color(map.sky);
+    scene.fog = new THREE.Fog(map.fog, 75, 155);
+
+    const sandTexture = makeSandTexture();
+    const sandMaterial = standard(map.sand, { map: sandTexture, roughness: 1 });
+
+    const sand = new THREE.Mesh(new THREE.PlaneGeometry(36, 100), sandMaterial);
+    sand.rotation.x = -Math.PI / 2;
+    sand.position.set(-10, -.04, 0);
+    sand.receiveShadow = true;
+    worldGroup.add(sand);
+
+    const waterGeometry = new THREE.PlaneGeometry(42, 100, 42, 64);
+    waterMesh = new THREE.Mesh(
+      waterGeometry,
+      standard(map.water, { roughness: .28, metalness: .07, flatShading: true, side: THREE.DoubleSide })
+    );
+    waterMesh.rotation.x = -Math.PI / 2;
+    waterMesh.position.set(29, 0, 0);
+    waterMesh.receiveShadow = true;
+    worldGroup.add(waterMesh);
+    waterBase = new Float32Array(waterGeometry.attributes.position.array);
+
+    addPlane(worldGroup, 5.2, 100, map.shallow, 10.6, .035, 0, {
+      materialOptions: { roughness: .36, metalness: .04 }
+    });
+
+    addPlane(worldGroup, 6, 100, "#ad8559", -31, -.02, 0);
+    addPlane(worldGroup, 6, 100, "#303f43", -37, -.03, 0, {
+      materialOptions: { roughness: .95 }
+    });
+    addPlane(worldGroup, 8, 100, "#6b9067", -44, -.06, 0);
+
+    for (let z = -47; z < 48; z += 5) {
+      addBox(worldGroup, .12, .035, 2.4, "#e1c668", -37, .01, z, { castShadow: false });
+    }
+
+    for (let z = -49; z <= 49; z += 3) {
+      addBox(worldGroup, 5.9, .035, .10, "#956f4d", -31, .01, z, { castShadow: false });
+    }
+
+    for (let z = -40; z <= 40; z += 16) {
+      addBuilding(worldGroup, z, 7 + rand() * 5, rand() > .5 ? "#dfc2a0" : "#e7d8b5", "#d88468");
+    }
+
+    for (let z = -42; z <= 42; z += 14) {
+      addPalm(worldGroup, -27.8, z, 4.7 + rand() * .8);
+    }
+
+    addKiosk(worldGroup, -24.5, -29, "#d5724c");
+    addKiosk(worldGroup, -24.5, 28, "#438d86");
+    addTower(worldGroup);
+    addVolleyball(worldGroup);
+
+    const umbrellaColors = ["#e75e56", "#f0d66e", "#4db9a8", "#f18d55", "#6689c7"];
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 4; col++) {
+        const x = -21 + col * 6.2;
+        const z = -34 + row * 22 + (col % 2) * 3;
+        addUmbrella(worldGroup, x, z, umbrellaColors[(row + col) % umbrellaColors.length]);
+      }
+    }
+
+    addBeachChair(worldGroup, -14, 11, "#e5dfcd");
+    addBeachChair(worldGroup, -11.8, 11.5, "#d6e2d4");
+    addBeachChair(worldGroup, -18, -11, "#e6d9c4");
+
+    for (let i = 0; i < 42; i++) {
+      const x = -25 + rand() * 31;
+      const z = -48 + rand() * 96;
+      const shell = new THREE.Mesh(
+        new THREE.SphereGeometry(.07 + rand() * .07, 5, 4),
+        standard(rand() > .5 ? "#d9c79f" : "#bba47e")
+      );
+      shell.position.set(x, .035, z);
+      shell.scale.set(1.4, .35, .7);
+      shell.rotation.y = rand() * Math.PI;
+      shell.castShadow = false;
+      worldGroup.add(shell);
+    }
+
+    for (let i = 0; i < 8; i++) {
+      const x = -18 + rand() * 21;
+      const z = -39 + rand() * 78;
+      if (Math.abs(z) < 4 && x < -10) continue;
+      const npc = makePerson({
+        shirt: ["#e58c52", "#55a9a1", "#d36c58", "#647cac", "#e5c16c"][i % 5],
+        pants: "#41515b",
+        cap: i % 3 === 0 ? "#f2e8d4" : false
+      });
+      npc.scale.setScalar(.72);
+      npc.position.set(x, 0, z);
+      npc.rotation.y = rand() * Math.PI * 2;
+      worldGroup.add(npc);
+    }
+
+    for (let i = 0; i < 18; i++) {
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(.45, .85, 20),
+        basic("#dffbfa", { transparent: true, opacity: .17, side: THREE.DoubleSide })
+      );
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.set(12 + rand() * 35, .065, -46 + rand() * 92);
+      ring.userData.phase = rand() * Math.PI * 2;
+      ring.userData.baseScale = .7 + rand() * .65;
+      worldGroup.add(ring);
+      ripples.push(ring);
+    }
+
+    for (let z = -47; z < 48; z += 4.3) {
+      const foam = addBox(worldGroup, .46 + rand() * .7, .028, .23 + rand() * .26, "#effff4", 8.2 + rand() * .45, .075, z, {
+        castShadow: false,
+        materialOptions: { transparent: true, opacity: .72 }
+      });
+      foam.rotation.y = (rand() - .5) * .35;
+    }
+
+    if (mapId === "sol") {
+      addPier(worldGroup, 35, 10);
+      addRock(worldGroup, 21, .2, -35, [2.4, 1.1, 2.0], "#777f7a");
+    } else if (mapId === "enseada") {
+      addRock(worldGroup, 10, .65, -32, [4.2, 2.2, 3.8], "#687c79");
+      addRock(worldGroup, 11, .55, 34, [4.5, 2.0, 3.5], "#687c79");
+      addRock(worldGroup, 24, .8, 31, [5.1, 2.6, 4.6], "#71817a");
+      addLighthouse(worldGroup, 24, 31);
+      addPier(worldGroup, 20, 8);
+    } else {
+      addRock(worldGroup, 12, .7, -34, [4.4, 2.3, 4.0], "#4f6263");
+      addRock(worldGroup, 18, .8, 31, [5.0, 2.4, 4.2], "#526263");
+      addWreck(worldGroup, 27, -29);
+      addRock(worldGroup, 36, .6, 30, [3.0, 1.8, 3.2], "#526263");
+    }
+
+    const role = roleById(selectedRole);
+    const spawn = role.spawn;
+    const actor = role.vehicle ? makeBoatActor(role) : makePerson({
+      shirt: role.shirt,
+      pants: role.pants,
+      cap: role.cap,
+      badge: role.accent
+    });
+    actor.position.set(spawn[0], 0, spawn[1]);
+    worldGroup.add(actor);
+
+    player = {
+      x: spawn[0],
+      z: spawn[1],
+      heading: 0,
+      actor,
+      role
+    };
+
+    setPreviewCamera();
+  }
+
+  function disposeTree(root) {
+    root.traverse((object) => {
+      if (object.geometry) object.geometry.dispose();
+      if (object.material) {
+        const materials = Array.isArray(object.material) ? object.material : [object.material];
+        materials.forEach((material) => {
+          if (material.map) material.map.dispose();
+          material.dispose();
+        });
+      }
+    });
+  }
+
+  function setPreviewCamera() {
+    if (!camera) return;
+    camera.position.set(13, 25, 34);
+    camera.lookAt(-7, 0, 0);
+  }
+
+  function setCameraToPlayer() {
+    if (!camera || !player) return;
+    camera.position.set(player.x + 21, 25, player.z + 28);
+    camera.lookAt(player.x, .7, player.z);
+  }
+
+  function makeBadgeSprite(color, text) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = `#${color.toString(16).padStart(6, "0")}`;
+    ctx.beginPath();
+    ctx.arc(64, 64, 49, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(255,255,255,.95)";
+    ctx.lineWidth = 7;
+    ctx.stroke();
+
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "bold 76px Arial";
+    ctx.fillText(text, 64, 68);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      depthTest: false
+    }));
+    sprite.scale.set(1.0, 1.0, 1);
+    return sprite;
+  }
+
+  function addSign(parent, color = "#3e8b88") {
+    addCylinder(parent, .07, .09, 1.65, "#7e6046", 0, .82, 0, 7);
+    addBox(parent, 1.28, .67, .14, color, 0, 1.62, .02);
+    addBox(parent, .77, .07, .03, "#f3eee0", 0, 1.72, .10);
+    addBox(parent, .51, .06, .03, "#f3eee0", 0, 1.52, .10);
+  }
+
+  function addTargetModel(parent, step) {
+    const kind = step.type;
+
+    if (kind === "rescue") {
+      const victim = makePerson({ shirt: "#e85059", pants: "#305a73", cap: "#e8e1ca", skin: "#d9a47c" });
+      victim.position.set(0, .16, 0);
+      victim.userData.limbs.arms[0].rotation.z = -.75;
+      victim.userData.limbs.arms[1].rotation.z = .75;
+      parent.add(victim);
+
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(.67, .12, 8, 20),
+        standard("#f1f0e5")
+      );
+      ring.rotation.x = Math.PI / 2;
+      ring.position.set(.23, .65, .04);
+      parent.add(ring);
+
+      for (let i = 0; i < 4; i++) {
+        const piece = new THREE.Mesh(new THREE.BoxGeometry(.12, .11, .22), standard("#e7534e"));
+        const angle = i * Math.PI / 2;
+        piece.position.set(.23 + Math.cos(angle) * .67, .65, Math.sin(angle) * .67);
+        parent.add(piece);
+      }
+      return;
+    }
+
+    if (kind === "aid") {
+      const person = makePerson({ shirt: "#e7a16b", pants: "#32596b", cap: false });
+      person.scale.setScalar(.9);
+      person.position.y = .04;
+      parent.add(person);
+      addBox(parent, .5, .30, .38, "#e8e8dc", .72, .17, .32);
+      addBox(parent, .11, .34, .04, "#e34e4e", .72, .18, .52);
+      addBox(parent, .31, .11, .04, "#e34e4e", .72, .18, .52);
+      return;
+    }
+
+    if (kind === "intervene") {
+      const first = makePerson({ shirt: "#db765c", pants: "#35475a", cap: false });
+      const second = makePerson({ shirt: "#547f9b", pants: "#394546", cap: false });
+      first.scale.setScalar(.82);
+      second.scale.setScalar(.82);
+      first.position.x = -.75;
+      second.position.x = .75;
+      first.rotation.y = .45;
+      second.rotation.y = -2.5;
+      parent.add(first, second);
+      return;
+    }
+
+    if (kind === "talk" || kind === "warn" || kind === "escort") {
+      const npc = makePerson({
+        shirt: kind === "warn" ? "#ed865d" : "#4a9c94",
+        pants: "#40535c",
+        cap: kind === "warn" ? "#efcf75" : false
+      });
+      npc.scale.setScalar(.88);
+      parent.add(npc);
+
+      if (kind === "escort") {
+        const second = makePerson({ shirt: "#d79569", pants: "#4c5960", cap: false });
+        second.scale.setScalar(.72);
+        second.position.x = 1.05;
+        second.rotation.y = -1.0;
+        parent.add(second);
+      }
+
+      if (kind === "warn") {
+        addCylinder(parent, .035, .04, 1.0, "#f4efe4", .75, 1.48, .05, 7);
+        addBox(parent, .55, .36, .04, "#ed554f", 1.0, 1.78, .05);
+      }
+      return;
+    }
+
+    if (kind === "findchild") {
+      const child = makePerson({ shirt: "#f0bb43", pants: "#397a9a", cap: "#e9584d", skin: "#dbab82" });
+      child.scale.setScalar(.72);
+      parent.add(child);
+      return;
+    }
+
+    if (kind === "patrol" || kind === "buoy") {
+      addCylinder(parent, .42, .52, .43, "#e95850", 0, .30, 0, 10);
+      addCylinder(parent, .28, .42, .37, "#f3ebd9", 0, .70, 0, 10);
+      addCylinder(parent, .19, .28, .30, "#e95850", 0, 1.02, 0, 10);
+      const light = new THREE.Mesh(new THREE.SphereGeometry(.18, 9, 7), standard("#fff1bd", {
+        emissive: "#f8d36d",
+        emissiveIntensity: .35
+      }));
+      light.position.y = 1.28;
+      parent.add(light);
+      return;
+    }
+
+    if (kind === "assist" || kind === "identify") {
+      const boat = new THREE.Group();
+      const hull = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 8), standard("#df8150"));
+      hull.scale.set(.75, .25, 1.45);
+      hull.position.y = .4;
+      boat.add(hull);
+      addBox(boat, 1.05, .12, 1.9, "#e9e9df", 0, .45, 0);
+      addBox(boat, .65, .52, .46, "#2f7383", 0, .77, -.4);
+      boat.rotation.y = -.4;
+      parent.add(boat);
+      return;
+    }
+
+    if (kind === "clue") {
+      addBox(parent, .68, .08, .5, "#e9dcad", 0, .08, 0);
+      addBox(parent, .22, .03, .38, "#f5f4ed", -.06, .14, .02, { rotationY: .18 });
+      const lens = new THREE.Mesh(
+        new THREE.TorusGeometry(.20, .045, 8, 16),
+        standard("#dfc364", { metalness: .32 })
+      );
+      lens.position.set(.45, .35, .12);
+      parent.add(lens);
+      addCylinder(parent, .035, .05, .38, "#70563e", .58, .17, .12, 7, { rotationZ: -.8 });
+      return;
+    }
+
+    if (kind === "clean") {
+      addBox(parent, .58, .66, .52, "#4f9b71", 0, .33, 0);
+      addBox(parent, .68, .10, .62, "#438260", 0, .72, 0);
+      addBox(parent, .26, .12, .34, "#e2d8bd", .78, .07, .24, { rotationY: .32 });
+      addCylinder(parent, .10, .12, .34, "#65b8c1", -.72, .17, -.10, 7, { rotationZ: .3 });
+      addBox(parent, .31, .08, .16, "#d9ad58", .42, .06, -.50, { rotationY: .55 });
+      return;
+    }
+
+    if (kind === "protect") {
+      const shell = new THREE.Mesh(new THREE.SphereGeometry(.55, 12, 9), standard("#557a4d"));
+      shell.scale.set(1.3, .60, 1);
+      shell.position.y = .43;
+      parent.add(shell);
+
+      const body = new THREE.Mesh(new THREE.SphereGeometry(.25, 9, 7), standard("#80a85a"));
+      body.position.set(0, .34, .62);
+      parent.add(body);
+
+      for (const sx of [-1, 1]) {
+        for (const sz of [-1, 1]) {
+          const leg = new THREE.Mesh(new THREE.SphereGeometry(.16, 7, 6), standard("#80a85a"));
+          leg.position.set(sx * .48, .18, sz * .36);
+          parent.add(leg);
+        }
+      }
+      return;
+    }
+
+    if (kind === "report" || kind === "return") {
+      addSign(parent, kind === "return" ? "#317e83" : "#3e786c");
+      addBox(parent, .58, .12, .42, "#d9d2bd", .84, .14, .32);
+      addBox(parent, .12, .28, .12, "#8d6949", .84, .03, .32);
+      return;
+    }
+
+    if (kind === "flag") {
+      addCylinder(parent, .055, .07, 2.4, "#e8e2d3", 0, 1.2, 0, 8);
+      addBox(parent, .88, .52, .08, "#ed4f4e", .42, 2.12, 0);
+      addBox(parent, .24, .52, .09, "#f1eee2", .10, 2.12, .05);
+      addCylinder(parent, .22, .30, .12, "#d9bb79", 0, .06, 0, 9);
+      return;
+    }
+
+    if (kind === "sample") {
+      addBox(parent, .90, .19, .55, "#e9e3d3", 0, .10, 0);
+      for (let i = 0; i < 3; i++) {
+        addCylinder(parent, .09, .12, .38, ["#72c8bd", "#dfc76f", "#7cb1d0"][i], -.27 + i * .27, .38, .04, 8);
+        addCylinder(parent, .07, .08, .10, "#e8eee1", -.27 + i * .27, .62, .04, 8);
+      }
+      return;
+    }
+
+    if (kind === "inspect") {
+      addBox(parent, .95, .58, .75, "#4e8b9a", 0, .31, 0);
+      addBox(parent, 1.02, .13, .80, "#e3e7dc", 0, .66, 0);
+      addBox(parent, .55, .11, .07, "#e6c56b", 0, .75, .40);
+      addBox(parent, .20, .16, .07, "#354f5a", .64, .36, .40);
+      return;
+    }
+
+    addSign(parent);
+  }
+
+  function createTarget(step) {
+    const style = TYPE_STYLE[step.type] || { color: 0x65d6c7, icon: "!" };
+    const map = mapById(selectedMap);
+    const root = new THREE.Group();
+    root.position.set(step.x + map.offset.x, 0, step.z + map.offset.z);
+
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(1.05, 1.28, 28),
+      basic(style.color, { transparent: true, opacity: .73, side: THREE.DoubleSide })
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = .045;
+    root.add(ring);
+
+    const beam = new THREE.Mesh(
+      new THREE.CylinderGeometry(.10, .22, 2.35, 9),
+      basic(style.color, { transparent: true, opacity: .16, depthWrite: false })
+    );
+    beam.position.y = 1.28;
+    root.add(beam);
+
+    const marker = new THREE.Group();
+    marker.position.y = 2.72;
+    const diamond = new THREE.Mesh(
+      new THREE.OctahedronGeometry(.34, 0),
+      standard(style.color, { emissive: style.color, emissiveIntensity: .45, roughness: .3 })
+    );
+    marker.add(diamond);
+    const badge = makeBadgeSprite(style.color, style.icon);
+    badge.position.y = .65;
+    marker.add(badge);
+    root.add(marker);
+
+    const entity = new THREE.Group();
+    root.add(entity);
+    addTargetModel(entity, step);
+
+    targetGroup = root;
+    markerFloat = marker;
+    worldGroup.add(root);
+  }
+
+  function clearTarget() {
+    if (targetGroup && worldGroup) {
+      worldGroup.remove(targetGroup);
+      disposeTree(targetGroup);
+    }
+    targetGroup = null;
+    markerFloat = null;
+  }
+
+  function spawnStep() {
+    const source = currentMission.steps[stepIndex];
+    const map = mapById(selectedMap);
+    const step = { ...source, x: source.x + map.offset.x, z: source.z + map.offset.z };
+
+    state.currentStep = step;
+    state.rescueRemaining = step.type === "rescue" ? (step.callSeconds || 60) : null;
+    state.rescueLate = false;
+
+    createTarget({ ...step, x: source.x, z: source.z });
+  }
+
+  function beginMission() {
+    const list = MISSIONS[selectedRole];
+    currentMission = list[missionIndex % list.length];
+    stepIndex = 0;
+    state.transition = 0;
+    spawnStep();
+    showToast(`Novo chamado: ${currentMission.title}`, "good");
+    updateHUD(true);
+  }
+
+  function startGame() {
+    if (!renderer) return;
+
+    state = {
+      score: 0,
+      rescues: 0,
+      missionsCompleted: 0,
+      cases: 0,
+      cleanups: 0,
+      safety: 100,
+      stamina: 100,
+      elapsed: 0,
+      transition: 0,
+      currentStep: null,
+      rescueRemaining: null,
+      rescueLate: false
+    };
+
+    missionIndex = 0;
+    stepIndex = 0;
+    currentMission = null;
+    active = true;
+    paused = false;
+    clearKeys();
+
+    $("menu").classList.add("hidden");
+    $("pauseOverlay").classList.add("hidden");
+    $("reportOverlay").classList.add("hidden");
+    $("hud").classList.remove("hidden");
+
+    createWorld(selectedMap);
+    setCameraToPlayer();
+    beginMission();
+    updateHUD(true);
+  }
+
+  function formatTime(value) {
+    const total = Math.max(0, Math.floor(value));
+    const minutes = Math.floor(total / 60).toString().padStart(2, "0");
+    const seconds = (total % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  }
+
+  function showToast(message, type = "") {
+    const toast = $("toast");
+    toast.textContent = message;
+    toast.className = `toast show ${type}`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.className = "toast";
+    }, 2600);
+  }
+
+  function currentDistance() {
+    if (!player || !state.currentStep) return Infinity;
+    const map = mapById(selectedMap);
+    const tx = state.currentStep.x + map.offset.x;
+    const tz = state.currentStep.z + map.offset.z;
+    return Math.hypot(player.x - tx, player.z - tz);
+  }
+
+  function interactionRadius() {
+    return player && player.role.vehicle ? 5.4 : 4.5;
+  }
+
+  function updateHUD(force = false) {
+    if (!active) return;
+
+    const map = mapById(selectedMap);
+    const role = roleById(selectedRole);
+    $("mapPill").textContent = map.name.toUpperCase();
+    $("rolePill").textContent = `${role.icon} ${role.name.toUpperCase()}`;
+    $("shiftClock").textContent = formatTime(state.elapsed);
+    $("scoreStat").textContent = state.score.toLocaleString("pt-BR");
+    $("rescueStat").textContent = state.rescues;
+    $("missionStat").textContent = state.missionsCompleted;
+    $("safetyLabel").textContent = `${Math.round(state.safety)}%`;
+    $("safetyBar").style.width = `${Math.max(0, state.safety)}%`;
+    $("staminaBar").style.width = `${Math.max(0, state.stamina)}%`;
+
+    if (state.safety < 36) {
+      $("safetyBar").style.background = "linear-gradient(90deg,#ff5d63,#ff9a61)";
+      $("safetyLabel").style.color = "#ff9a91";
+    } else {
+      $("safetyBar").style.background = "linear-gradient(90deg,#f3bd62,#55dfa9)";
+      $("safetyLabel").style.color = "#dff9ef";
+    }
+
+    $("missionNumber").textContent = `TURNO ${String(state.missionsCompleted + 1).padStart(2, "0")}`;
+
+    if (currentMission) {
+      $("missionTitle").textContent = currentMission.title;
+      $("missionDesc").textContent = currentMission.description;
+      $("progressDots").innerHTML = currentMission.steps.map((_, index) => {
+        let className = "";
+        if (index < stepIndex) className = "done";
+        else if (index === stepIndex && state.currentStep) className = "current";
+        return `<i class="${className}"></i>`;
+      }).join("");
+      $("stageLabel").textContent = state.currentStep
+        ? `ETAPA ${stepIndex + 1} / ${currentMission.steps.length}`
+        : "OCORRÊNCIA RESOLVIDA";
+    }
+
+    if (state.currentStep) {
+      const step = state.currentStep;
+      const style = TYPE_STYLE[step.type] || { icon: "✦" };
+      const distance = currentDistance();
+      const inRange = distance <= interactionRadius();
+
+      $("targetSymbol").textContent = style.icon;
+      $("currentTargetTitle").textContent = step.title;
+      $("currentTargetDesc").textContent = step.detail;
+      $("actionLabel").textContent = step.action;
+      $("interactionText").textContent = inRange
+        ? "Você está no ponto. Interaja para concluir o objetivo."
+        : "Siga até o marcador para chegar ao ponto de atendimento.";
+
+      $("distanceText").textContent = Number.isFinite(distance)
+        ? `${Math.round(distance)} m do objetivo`
+        : "Aguardando objetivo";
+
+      const mapOffset = map.offset;
+      const dx = step.x + mapOffset.x - player.x;
+      const dz = step.z + mapOffset.z - player.z;
+      const angle = Math.atan2(dx, -dz) * 180 / Math.PI;
+      $("directionArrow").style.transform = `rotate(${angle}deg)`;
+
+      $("actionBtn").disabled = !inRange;
+      $("actionBtn").setAttribute("aria-label", step.action);
+
+      if (step.type === "rescue" && state.rescueRemaining !== null) {
+        $("urgencyBox").classList.remove("hidden");
+        $("urgencyTime").textContent = formatTime(state.rescueRemaining);
+        $("urgencyBox").classList.toggle("critical", state.rescueRemaining < 16);
+      } else {
+        $("urgencyBox").classList.add("hidden");
+      }
+    } else {
+      $("targetSymbol").textContent = "✓";
+      $("currentTargetTitle").textContent = state.transition > 0 ? "Chamado resolvido" : "Aguardando próximo chamado";
+      $("currentTargetDesc").textContent = state.transition > 0 ? "Prepare-se para a próxima ocorrência." : "A equipe está pronta.";
+      $("interactionText").textContent = "Ocorrência concluída. Aguarde o próximo chamado.";
+      $("distanceText").textContent = "Área segura";
+      $("actionLabel").textContent = "Aguardando";
+      $("actionBtn").disabled = true;
+      $("urgencyBox").classList.add("hidden");
+    }
+
+    drawMinimap();
+  }
+
+  function drawMinimap() {
+    const canvas = $("mapCanvas");
+    if (!canvas || !player) return;
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    const map = mapById(selectedMap);
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = map.sand;
+    ctx.fillRect(0, 0, width, height);
+
+    const minX = -40;
+    const maxX = 45;
+    const minZ = -45;
+    const maxZ = 45;
+    const mapX = (x) => ((x - minX) / (maxX - minX)) * width;
+    const mapZ = (z) => ((z - minZ) / (maxZ - minZ)) * height;
+
+    const roadLeft = mapX(-40);
+    const roadRight = mapX(-34);
+    ctx.fillStyle = "#6c795e";
+    ctx.fillRect(0, 0, mapX(-40), height);
+    ctx.fillStyle = "#34464a";
+    ctx.fillRect(roadLeft, 0, roadRight - roadLeft, height);
+    ctx.fillStyle = "#9a7956";
+    ctx.fillRect(mapX(-34), 0, mapX(-28) - mapX(-34), height);
+
+    const shore = mapX(8);
+    ctx.fillStyle = map.shallow;
+    ctx.fillRect(shore, 0, mapX(14) - shore, height);
+    ctx.fillStyle = map.water;
+    ctx.fillRect(mapX(14), 0, width - mapX(14), height);
+
+    ctx.strokeStyle = "rgba(255,255,255,.14)";
+    ctx.lineWidth = 1;
+    for (let i = 1; i < 5; i++) {
+      ctx.beginPath();
+      ctx.moveTo(shore + i * 11, 0);
+      ctx.lineTo(shore + i * 11, height);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = "rgba(255,255,255,.19)";
+    ctx.fillRect(mapX(-31), 0, 2, height);
+
+    if (state.currentStep) {
+      const px = mapX(player.x);
+      const pz = mapZ(player.z);
+      const tx = mapX(state.currentStep.x + map.offset.x);
+      const tz = mapZ(state.currentStep.z + map.offset.z);
+      const pulse = 4 + Math.sin(performance.now() * .006) * 1.2;
+
+      ctx.strokeStyle = "rgba(255,255,255,.24)";
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.moveTo(px, pz);
+      ctx.lineTo(tx, tz);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.beginPath();
+      ctx.arc(tx, tz, pulse + 3, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,.23)";
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(tx, tz, pulse, 0, Math.PI * 2);
+      ctx.fillStyle = "#ff6769";
+      ctx.fill();
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    }
+
+    const px = mapX(player.x);
+    const pz = mapZ(player.z);
+    ctx.save();
+    ctx.translate(px, pz);
+    ctx.rotate(player.heading);
+    ctx.beginPath();
+    ctx.moveTo(0, -7);
+    ctx.lineTo(5, 6);
+    ctx.lineTo(0, 3);
+    ctx.lineTo(-5, 6);
+    ctx.closePath();
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+    ctx.strokeStyle = "#0b5962";
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle = "rgba(4,20,30,.8)";
+    ctx.font = "bold 8px sans-serif";
+    ctx.fillText("AREIA", 8, height - 8);
+    ctx.fillText("MAR", width - 33, height - 8);
+  }
+
+  function completeObjective() {
+    if (!active || paused || !state.currentStep) return;
+
+    const distance = currentDistance();
+    if (distance > interactionRadius()) {
+      showToast(`Chegue mais perto do objetivo (${Math.round(distance)} m).`, "warn");
+      return;
+    }
+
+    const step = state.currentStep;
+    let reward = step.reward || 120;
+
+    if (step.type === "rescue") {
+      state.rescues += 1;
+      state.safety = Math.min(100, state.safety + 9);
+      if (state.rescueRemaining !== null && state.rescueRemaining > 0) {
+        reward += 80;
+        showToast("Resgate realizado! Banhista em segurança.", "good");
+      } else {
+        showToast("Resgate concluído. A pessoa está em segurança.", "good");
+      }
+    } else if (step.type === "clean" || step.type === "protect" || step.type === "sample") {
+      state.cleanups += 1;
+      showToast("Ação ambiental concluída.", "good");
+    } else if (step.type === "clue" || step.type === "inspect" || step.type === "identify" || step.type === "talk") {
+      state.cases += 1;
+      showToast("Informação registrada na ocorrência.", "good");
+    } else {
+      showToast("Objetivo concluído.", "good");
+    }
+
+    state.score += reward;
+    clearTarget();
+    stepIndex += 1;
+    state.currentStep = null;
+    state.rescueRemaining = null;
+
+    if (stepIndex >= currentMission.steps.length) {
+      state.missionsCompleted += 1;
+      state.score += 250;
+      state.safety = Math.min(100, state.safety + 3);
+      state.transition = 2.2;
+      showToast(`Missão concluída: ${currentMission.title} • +250`, "good");
+    } else {
+      spawnStep();
+    }
+
+    updateHUD(true);
+  }
+
+  function clearKeys() {
+    keys.w = false;
+    keys.a = false;
+    keys.s = false;
+    keys.d = false;
+    keys.shift = false;
+  }
+
+  function interact() {
+    if (!active || paused) return;
+    completeObjective();
+  }
+
+  function togglePause(force) {
+    if (!active) return;
+    paused = typeof force === "boolean" ? force : !paused;
+    $("pauseOverlay").classList.toggle("hidden", !paused);
+    if (paused) clearKeys();
+  }
+
+  function endShift() {
+    if (!active) return;
+    active = false;
+    paused = false;
+    clearKeys();
+    $("hud").classList.add("hidden");
+    $("pauseOverlay").classList.add("hidden");
+
+    let grade = "Bom trabalho!";
+    if (state.safety >= 90 && state.missionsCompleted >= 3) grade = "Lenda do litoral!";
+    else if (state.safety >= 70) grade = "Turno exemplar";
+    else if (state.safety < 36) grade = "Turno de emergência";
+
+    $("reportGrade").textContent = grade;
+    $("reportScore").textContent = state.score.toLocaleString("pt-BR");
+    $("reportSaves").textContent = state.rescues;
+    $("reportMissions").textContent = state.missionsCompleted;
+    $("reportSafety").textContent = `${Math.round(state.safety)}%`;
+    $("reportOverlay").classList.remove("hidden");
+  }
+
+  function returnToMenu() {
+    active = false;
+    paused = false;
+    clearKeys();
+    $("hud").classList.add("hidden");
+    $("pauseOverlay").classList.add("hidden");
+    $("reportOverlay").classList.add("hidden");
+    $("menu").classList.remove("hidden");
+    renderSelection();
+    if (scene) createWorld(selectedMap);
+  }
+
+  function updateWater(time) {
+    if (waterMesh && waterBase) {
+      const position = waterMesh.geometry.attributes.position;
+      const array = position.array;
+      for (let i = 0; i < array.length; i += 3) {
+        const x = waterBase[i];
+        const z = waterBase[i + 1];
+        array[i + 2] =
+          Math.sin(x * .38 + time * 1.2) * .035 +
+          Math.cos(z * .27 - time * .9) * .028;
+      }
+      position.needsUpdate = true;
+      waterMesh.geometry.computeVertexNormals();
+    }
+
+    for (const ripple of ripples) {
+      const phase = time * .7 + ripple.userData.phase;
+      const scale = ripple.userData.baseScale * (1 + Math.sin(phase) * .12);
+      ripple.scale.set(scale, scale, scale);
+      ripple.material.opacity = .12 + (Math.sin(phase) + 1) * .035;
+    }
+  }
+
+  function updateGame(dt, time) {
+    if (!active || paused) return;
+
+    state.elapsed += dt;
+
+    if (state.transition > 0) {
+      state.transition -= dt;
+      if (state.transition <= 0) {
+        missionIndex += 1;
+        beginMission();
+      }
+    }
+
+    const role = player.role;
+    let dx = (keys.d ? 1 : 0) - (keys.a ? 1 : 0);
+    let dz = (keys.s ? 1 : 0) - (keys.w ? 1 : 0);
+    const moving = Math.hypot(dx, dz) > .01;
+
+    if (moving) {
+      const length = Math.hypot(dx, dz);
+      dx /= length;
+      dz /= length;
+
+      let speed = role.speed;
+      if (role.vehicle) {
+        speed = role.speed;
+      } else if (player.x > 8) {
+        speed *= .68;
+      }
+
+      const sprinting = keys.shift && !role.vehicle && state.stamina > 1;
+      if (sprinting) {
+        speed *= 1.48;
+        state.stamina = Math.max(0, state.stamina - 27 * dt);
+      } else {
+        state.stamina = Math.min(100, state.stamina + 20 * dt);
+      }
+
+      player.x += dx * speed * dt;
+      player.z += dz * speed * dt;
+      player.x = Math.max(-43, Math.min(44, player.x));
+      player.z = Math.max(-48, Math.min(48, player.z));
+      player.heading = Math.atan2(dx, -dz);
+
+      player.actor.position.set(player.x, 0, player.z);
+      player.actor.rotation.y = Math.atan2(dx, dz);
+    } else {
+      state.stamina = Math.min(100, state.stamina + 15 * dt);
+    }
+
+    const limbs = player.actor.userData.limbs;
+    if (limbs) {
+      const amount = moving ? (keys.shift && !role.vehicle ? 1 : .72) : .06;
+      for (let i = 0; i < limbs.legs.length; i++) {
+        const phase = time * 10 + i * Math.PI;
+        limbs.legs[i].rotation.x = Math.sin(phase) * .48 * amount;
+      }
+      for (let i = 0; i < limbs.arms.length; i++) {
+        const phase = time * 10 + i * Math.PI + Math.PI;
+        limbs.arms[i].rotation.x = Math.sin(phase) * .32 * amount;
+      }
+    }
+
+    if (markerFloat) {      markerFloat.position.y = 2.72 + Math.sin(time * 2.7) * .20;
+      markerFloat.rotation.y = time * .45;
+    }
+
+    if (state.currentStep && state.currentStep.type === "rescue" && state.rescueRemaining !== null) {
+      state.rescueRemaining -= dt;
+      if (state.rescueRemaining <= 0) {
+        state.rescueRemaining = null;
+        state.rescueLate = true;
+        state.safety = Math.max(0, state.safety - 16);
+        showToast("Alerta crítico: a segurança da praia caiu. Ainda é possível completar o resgate!", "bad");
+      }
+    }
+
+    if (state.safety <= 0) {
+      endShift();
+      return;
+    }
+
+    const desired = new THREE.Vector3(player.x + 21, 25, player.z + 28);
+    camera.position.lerp(desired, 1 - Math.pow(.001, dt));
+    camera.lookAt(player.x, .7, player.z);
+
+    uiTimer += dt;
+    if (uiTimer > .12) {
+      uiTimer = 0;
+      updateHUD();
+    }
+  }
+
+  function animate(now) {
+    requestAnimationFrame(animate);
+    const dt = Math.min((now - lastTime) / 1000, .05);
+    lastTime = now;
+
+    const time = now / 1000;
+    updateWater(time);
+    updateGame(dt, time);
+
+    if (renderer && scene && camera) renderer.render(scene, camera);
+  }
+
+  function installControls() {
+    $("startBtn").addEventListener("click", startGame);
+    $("actionBtn").addEventListener("click", interact);
+    $("pauseBtn").addEventListener("click", () => togglePause());
+    $("resumeBtn").addEventListener("click", () => togglePause(false));
+    $("endShiftBtn").addEventListener("click", endShift);
+    $("returnMenuBtn").addEventListener("click", returnToMenu);
+    $("restartBtn").addEventListener("click", startGame);
+
+    $("fullscreenBtn").addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const code = event.code;
+
+      const keyMap = {
+        KeyW: "w", ArrowUp: "w",
+        KeyA: "a", ArrowLeft: "a",
+        KeyS: "s", ArrowDown: "s",
+        KeyD: "d", ArrowRight: "d",
+        ShiftLeft: "shift", ShiftRight: "shift"
+      };
+
+      if (keyMap[code]) {
+        keys[keyMap[code]] = true;
+        event.preventDefault();
+      }
+
+      if ((code === "KeyE" || code === "Space") && !event.repeat) {
+        event.preventDefault();
+        interact();
+      }
+
+      if (code === "Escape") {
+        event.preventDefault();
+        if ($("reportOverlay").classList.contains("hidden")) togglePause();
+      }
+    });
+
+    document.addEventListener("keyup", (event) => {
+      const keyMap = {
+        KeyW: "w", ArrowUp: "w",
+        KeyA: "a", ArrowLeft: "a",
+        KeyS: "s", ArrowDown: "s",
+        KeyD: "d", ArrowRight: "d",
+        ShiftLeft: "shift", ShiftRight: "shift"
+      };
+      if (keyMap[event.code]) keys[keyMap[event.code]] = false;
+    });
+
+    window.addEventListener("blur", clearKeys);
+
+    document.querySelectorAll(".mobile-controls [data-key]").forEach((button) => {
+      const key = button.dataset.key;
+
+      button.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        keys[key] = true;
+        button.setPointerCapture?.(event.pointerId);
+      });
+
+      const release = (event) => {
+        event.preventDefault();
+        keys[key] = false;
+      };
+
+      button.addEventListener("pointerup", release);
+      button.addEventListener("pointercancel", release);
+      button.addEventListener("lostpointercapture", release);
+    });
+  }
+
+  function initThree() {
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.08;
+      $("game").appendChild(renderer.domElement);
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, .1, 240);
+
+      const hemi = new THREE.HemisphereLight("#e7fbff", "#b39a72", 1.55);
+      scene.add(hemi);
+
+      const sun = new THREE.DirectionalLight("#fff1d4", 2.25);
+      sun.position.set(-25, 42, -20);
+      sun.castShadow = true;
+      sun.shadow.mapSize.set(1536, 1536);
+      sun.shadow.camera.left = -65;
+      sun.shadow.camera.right = 65;
+      sun.shadow.camera.top = 65;
+      sun.shadow.camera.bottom = -65;
+      sun.shadow.camera.near = 1;
+      sun.shadow.camera.far = 120;
+      sun.shadow.bias = -.0005;
+      scene.add(sun);
+
+      const fill = new THREE.DirectionalLight("#83d6e5", .55);
+      fill.position.set(25, 18, 24);
+      scene.add(fill);
+
+      const sunBall = new THREE.Mesh(
+        new THREE.SphereGeometry(2.0, 16, 12),
+        new THREE.MeshBasicMaterial({ color: "#fff2c9" })
+      );
+      sunBall.position.set(-15, 35, -44);
+      scene.add(sunBall);
+
+      createWorld(selectedMap);
+      window.addEventListener("resize", () => {
+        if (!camera || !renderer) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8));
+      });
+
+      requestAnimationFrame(animate);
+    } catch (error) {
+      console.error(error);
+      $("menuError").textContent = "Não foi possível iniciar o modo 3D. Tente usar um navegador atualizado com WebGL ativado.";
+      $("menuError").classList.remove("hidden");
+    }
+  }
+
+  renderSelection();
+  initThree();
+  installControls();
+})();
+</script>
+
+<div class="wmk-credits" aria-label="Créditos do projeto">WMK Guardiões do Litoral · v0.1.0 · <a href="mailto:walneyk@hotmail.com">Walney Moreira Klein — walneyk@hotmail.com</a></div>
+<style>.wmk-credits{position:fixed;left:10px;bottom:5px;z-index:7;font-size:10px;color:#d1e5e7;background:rgba(5,24,37,.68);padding:4px 9px;border-radius:7px;pointer-events:auto}.wmk-credits a{color:#6de2d0;text-decoration:none}@media(max-width:680px){.wmk-credits{font-size:8px;bottom:auto;top:54px;max-width:55vw}}</style>
+</body>
+</html>
