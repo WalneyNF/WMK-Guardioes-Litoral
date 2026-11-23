@@ -12,7 +12,9 @@
     ],
     "hull": "#e4f0e9",
     "accent": "#e77a43",
-    "model": "boat"
+    "model": "boat",
+    "acceleration": 2.2,
+    "drag": 1.5
   },
   {
     "id": "jetski",
@@ -27,7 +29,9 @@
     ],
     "hull": "#ffead5",
     "accent": "#fa8156",
-    "model": "jetski"
+    "model": "jetski",
+    "acceleration": 3.6,
+    "drag": 2.8
   },
   {
     "id": "bote",
@@ -42,6 +46,8 @@
     ],
     "hull": "#f9d35a",
     "accent": "#e45e4d",
-    "model": "inflatable"
+    "model": "inflatable",
+    "acceleration": 1.65,
+    "drag": 2.1
   }
 ]
