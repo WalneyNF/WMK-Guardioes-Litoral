@@ -2,7 +2,7 @@
 
 **Simulador 3D de patrulha, salvamento, investigação e proteção ambiental em praias brasileiras.**
 
-**Versão experimental atual:** 0.7.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
+**Versão experimental atual:** 0.8.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
 
 **Desenvolvimento e adaptação WMK:** **Walney Moreira Klein** — [walneyk@hotmail.com](mailto:walneyk@hotmail.com).
 
@@ -145,3 +145,14 @@ Abra [editor-veiculos.html](editor-veiculos.html) no menu inicial. O editor perm
 **Como usar:** selecione o veículo, altere os campos, clique **Aplicar alterações** e **Salvar no navegador**. Volte ao jogo e recarregue a página: os ajustes validados serão aplicados. Os botões **Exportar JSON** e **Importar JSON** trabalham com `schemaVersion: 1` e as coleções `marine` e `land`. Salvar no navegador não grava arquivos no GitHub nem altera os JSONs originais.
 
 **Arquivos:** `editor-veiculos.html`, `js/editor-veiculos.js` e `tests/editor-veiculos.test.js`. Consulte o [roadmap](roadmap.html) para limitações e próximos recursos (GLB, gizmos, peças e prévia 3D). A visualização gráfica do editor requer teste manual em navegador real.
+
+
+## WMK Editor 3D — v0.8.0 (experimental)
+
+Em `editor-veiculos.html`, os **cinco veículos** agora possuem pré-visualização tridimensional procedural, com câmera orbital, zoom, pan, seleção por clique e transformação individual de peças com os campos X/Y/Z, rotação Y e escala. A prévia 2D continua disponível quando WebGL/CDN falhar.
+
+O botão **Importar GLB** aceita um arquivo local até **15 MB** e carrega somente no laboratório de visualização. **Exportar peças JSON** gera nomes, caminhos, posições, rotações e escalas dos elementos visíveis. **Modelo procedural** restaura a prévia original.
+
+**Limites:** importar GLB não substitui o modelo no jogo; ajustes de peças e os próprios GLBs não persistem automaticamente. Os dados editáveis de física e cores continuam usando o sistema de presets v0.7. Não há gizmos de transformação arrastáveis nem exportação GLB editada nesta etapa. Necessária internet para Three.js e GLTFLoader via CDN.
+
+Manual detalhado: [Editor de Veículos 3D](manuais/editor-veiculos-3d.html). Para validar estrutura e sintaxe: `node --test tests/preview3d.test.js`.
