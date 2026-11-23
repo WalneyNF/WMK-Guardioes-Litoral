@@ -1,0 +1,47 @@
+[
+  {
+    "id": "lancha",
+    "name": "Lancha de patrulha",
+    "icon": "🚤",
+    "category": "maritimo",
+    "speed": 12,
+    "scale": [
+      1,
+      1,
+      1
+    ],
+    "hull": "#e4f0e9",
+    "accent": "#e77a43",
+    "model": "boat"
+  },
+  {
+    "id": "jetski",
+    "name": "Jet ski de resgate",
+    "icon": "🛟",
+    "category": "maritimo",
+    "speed": 17,
+    "scale": [
+      0.65,
+      0.78,
+      0.82
+    ],
+    "hull": "#ffead5",
+    "accent": "#fa8156",
+    "model": "jetski"
+  },
+  {
+    "id": "bote",
+    "name": "Bote inflável",
+    "icon": "🛶",
+    "category": "maritimo",
+    "speed": 9.5,
+    "scale": [
+      0.9,
+      0.78,
+      0.84
+    ],
+    "hull": "#f9d35a",
+    "accent": "#e45e4d",
+    "model": "inflatable"
+  }
+]
