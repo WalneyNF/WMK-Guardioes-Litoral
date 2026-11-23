@@ -1,0 +1,50 @@
+[
+  {
+    "id": "sol",
+    "name": "Praia do Sol",
+    "region": "Costa Dourada",
+    "icon": "☀️",
+    "description": "Calçadão movimentado, quiosques e mar aberto.",
+    "sky": "#a6dff0",
+    "fog": "#b5d9df",
+    "sand": "#e8cb8d",
+    "water": "#1685a4",
+    "shallow": "#52c9c7",
+    "offset": {
+      "x": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "enseada",
+    "name": "Enseada Azul",
+    "region": "Baía das Pedras",
+    "icon": "🌊",
+    "description": "Águas claras, costões e um farol histórico.",
+    "sky": "#a7e6e7",
+    "fog": "#b5dedb",
+    "sand": "#eddaa4",
+    "water": "#167c91",
+    "shallow": "#56d2c6",
+    "offset": {
+      "x": 1,
+      "z": 2
+    }
+  },
+  {
+    "id": "ilha",
+    "name": "Ilha Brava",
+    "region": "Arquipélago Sul",
+    "icon": "🏝️",
+    "description": "Praia isolada, rochas vulcânicas e um naufrágio.",
+    "sky": "#b4dce0",
+    "fog": "#bdd7d7",
+    "sand": "#cdb28a",
+    "water": "#155e77",
+    "shallow": "#45aa9e",
+    "offset": {
+      "x": -2,
+      "z": -3
+    }
+  }
+]
