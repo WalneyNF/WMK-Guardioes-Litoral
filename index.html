@@ -1186,6 +1186,11 @@ button { font: inherit; }
       <a href="manuais/primeiro-contato.html" style="color:#78e5d6">📖 Manual</a>
       <span style="color:#c1d0d8">Versão 0.3.0 (experimental)</span>
     </nav>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+      <button id="exportDataBtn" type="button" class="secondary-button" title="Exportar mapas, profissões e missões num único JSON">Exportar dados JSON</button>
+      <button id="importDataBtn" type="button" class="secondary-button" title="Carregar um pacote JSON válido somente nesta sessão">Importar pacote JSON</button>
+      <input id="importDataFile" type="file" accept=".json,application/json" class="hidden" aria-label="Escolher pacote JSON" />
+    </div>
     <div id="dataStatus" role="status" aria-live="polite" style="margin-top:10px;color:#89dfd2;font-size:11px">Carregando arquivos JSON...</div>
     <div id="menuError" class="hidden" role="alert"></div>
   </div>
@@ -1441,6 +1446,47 @@ button { font: inherit; }
     const response = await fetch(path, { cache: "no-store" });
     if (!response.ok) throw new Error(path + ": HTTP " + response.status);
     return response.json();
+  }
+
+  function exportDataBundle() {
+    if (!MAPS.length || !ROLES.length) return;
+    const payload = { schemaVersion: 1, maps: MAPS, roles: ROLES, missions: MISSIONS };
+    const blob = new Blob([JSON.stringify(payload, null, 2) + "\n"], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "wmk-guardioes-litoral-dados-v1.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  async function importDataBundle(file) {
+    if (!file) return;
+    if (active) { showToast("Encerre o turno antes de importar dados.", "warn"); return; }
+    try {
+      if (file.size > 2 * 1024 * 1024) throw new Error("O pacote JSON não pode ultrapassar 2 MB.");
+      const parsed = JSON.parse(await file.text());
+      if (!parsed || parsed.schemaVersion !== 1) throw new Error("schemaVersion deve ser 1.");
+      validateData(parsed.maps, parsed.roles, parsed.missions);
+      MAPS = parsed.maps; ROLES = parsed.roles; MISSIONS = parsed.missions;
+      if (!MAPS.some(m => m.id === selectedMap)) selectedMap = MAPS[0].id;
+      if (!ROLES.some(r => r.id === selectedRole)) selectedRole = ROLES[0].id;
+      roleSessions = Object.create(null);
+      savePreferences();
+      renderSelection();
+      if (scene) createWorld(selectedMap);
+      $("dataStatus").textContent = "Pacote importado nesta sessão: " + MAPS.length +
+        " mapas, " + ROLES.length + " profissões.";
+      $("menuError").classList.add("hidden");
+    } catch (error) {
+      console.error("Importação rejeitada:", error);
+      $("menuError").textContent = "Pacote rejeitado: " + error.message;
+      $("menuError").classList.remove("hidden");
+    } finally {
+      $("importDataFile").value = "";
+    }
   }
 
   function readPreferences() {
@@ -2934,6 +2980,9 @@ button { font: inherit; }
 
   function installControls() {
     $("startBtn").addEventListener("click", startGame);
+    $("exportDataBtn").addEventListener("click", exportDataBundle);
+    $("importDataBtn").addEventListener("click", () => $("importDataFile").click());
+    $("importDataFile").addEventListener("change", event => importDataBundle(event.target.files[0]));
     $("switchBtn").addEventListener("click", switchRole);
     $("actionBtn").addEventListener("click", interact);
     $("pauseBtn").addEventListener("click", () => togglePause());
