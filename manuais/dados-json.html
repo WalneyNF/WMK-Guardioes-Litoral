@@ -1,0 +1,51 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manual JSON · WMK Guardiões do Litoral</title><style>body{font:16px/1.65 system-ui;margin:0;background:#081d2b;color:#e6f4f5}main{max-width:970px;margin:36px auto;padding:24px}h1,h2{color:#69e5d1}section{background:#103143;border:1px solid #315464;border-radius:12px;margin:18px 0;padding:18px}pre{padding:14px;overflow:auto;background:#031824;color:#f7dfb9}a{color:#75ebd7}code{color:#f5cd83}</style></head><body><main><p><a href="../index.html">← Jogo</a> · <a href="../roadmap.html">Roadmap</a> · <a href="../pesquisa.html">Pesquisa</a></p><h1>Manual de arquivos JSON — v0.3.0</h1><p>Walney Moreira Klein — walneyk@hotmail.com</p>
+<section><h2>1. Como iniciar corretamente</h2><p>A v0.3 lê os dados por <code>fetch()</code> e não funciona aberta diretamente em <code>file://</code>. Abra um terminal na pasta do projeto e execute:</p><pre>py -m http.server 8000</pre><p>Depois visite <code>http://localhost:8000/</code>. É necessária conexão com a internet para carregar Three.js do CDN. Para edição local, use o VS Code ou qualquer editor JSON.</p></section>
+<section><h2>2. Arquivos</h2><p><code>dados/mapas.json</code>: lista de mapas; <code>dados/profissoes.json</code>: lista de funções profissionais, velocidade, cores, posição inicial e controle de veículo; <code>dados/missoes.json</code>: objeto com uma lista de missões para cada ID de profissão.</p><p>Os IDs de profissão devem corresponder às chaves do JSON de missões.</p></section>
+<section><h2>3. Exemplo de mapa</h2><pre>{
+  "id": "sol",
+  "name": "Praia do Sol",
+  "region": "Costa Dourada",
+  "icon": "☀️",
+  "description": "Calçadão e mar aberto.",
+  "sky": "#a6dff0",
+  "fog": "#b5d9df",
+  "sand": "#e8cb8d",
+  "water": "#1685a4",
+  "shallow": "#52c9c7",
+  "offset": {"x": 0, "z": 0}
+}</pre><p>Esta estrutura é uma entrada dentro de uma lista JSON. Os mapas compartilham a geometria-base da versão atual; alterar campos visuais não cria novos objetos 3D.</p></section>
+<section><h2>4. Exemplo de profissão</h2><pre>{
+  "id": "eco",
+  "name": "Fiscal ambiental",
+  "icon": "🌱",
+  "short": "Proteção da fauna.",
+  "code": "MEIO AMBIENTE",
+  "accent": "#79d68d",
+  "shirt": "#3e9b68",
+  "pants": "#385843",
+  "cap": "#34734e",
+  "speed": 7.2,
+  "vehicle": false,
+  "spawn": [-16, -8]
+}</pre><p>As coordenadas de <code>spawn</code> indicam a posição inicial na cena em unidades do mundo. A opção <code>vehicle</code> distingue, no protótipo, os modelos e movimentos implementados.</p></section>
+<section><h2>5. Exemplo de missão</h2><pre>{
+  "eco": [
+    {
+      "title": "Inspeção ambiental",
+      "description": "Verifique a praia e registre a situação.",
+      "steps": [
+        {
+          "type": "inspect",
+          "title": "Inspecionar área",
+          "detail": "Vá ao ponto sinalizado.",
+          "action": "Inspecionar",
+          "x": -7,
+          "z": -15,
+          "reward": 100
+        }
+      ]
+    }
+  ]
+}</pre><p>Este exemplo representa apenas a entrada <code>eco</code>; o arquivo completo precisa manter as demais profissões. Para resgates com prazo, utilize <code>"callSeconds": 60</code> na etapa do tipo <code>rescue</code>.</p></section>
+<section><h2>6. Validação e limitações</h2><p>O carregador valida IDs, duplicidade, cores hexadecimais, campos de texto, velocidade, coordenadas, limites de quantidade e missões de todas as profissões. Se algum arquivo estiver inválido, o menu exibirá o erro e bloqueará a inicialização.</p><p>A versão ainda não dispõe de editor visual JSON, validação semântica completa dos tipos de etapas, IA autônoma nem importação de GLB. Faça uma cópia dos arquivos antes de editar.</p></section>
+<section><h2>7. Testes</h2><pre>node tests/validar.js</pre><p>Testa sintaxe e integridade básica do conteúdo. Execute também uma rodada manual no navegador: inicie missão, alterne agentes, conclua etapas, pause, retorne e reinicie.</p></section><footer>© 2026 Walney Moreira Klein · Conteúdo autoral sob MIT.</footer></main></body></html>
