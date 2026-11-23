@@ -12,3 +12,4 @@ jobs:
         with:
           node-version: '22'
       - run: node tests/validar.js
+      - run: node --test tests/terrestres.test.js
