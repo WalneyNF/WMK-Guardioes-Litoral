@@ -55,3 +55,13 @@ for (const p of ['README.md','LICENSE','roadmap.html','pesquisa.html',
   assert.ok(fs.existsSync(path.join(root, p)), 'Documento ausente: ' + p);
 }
 console.log('OK: sintaxe, mapas, profissões, missões, veículos e embarque v0.5.');
+
+// Verificação estática da expansão terrestre v0.6.
+const fsLand=require('node:fs');
+const landData=JSON.parse(fsLand.readFileSync(require('node:path').join(__dirname,'../dados/veiculos-terrestres.json'),'utf8'));
+assert.equal(landData.length,2,'Frota terrestre deve conter dois veículos');
+assert.ok(landData.every(v=>v.acceleration>0&&v.drag>0&&v.speed>0),'Parâmetros terrestres inválidos');
+assert.ok(html.includes('src="js/terrestres.js"'),'Script de veículos terrestres não carregado');
+assert.ok(html.includes('function validateLandVehicles('),'Validação terrestre ausente');
+assert.ok(html.includes('landSystem.move('),'Movimento terrestre não integrado');
+console.log('OK: integração dos dados e módulo de veículos terrestres v0.6.');
