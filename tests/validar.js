@@ -25,6 +25,9 @@ assert.ok(html.includes('squad[role.id]'), 'Equipe persistente ausente');
 assert.ok(html.includes('roleSessions[selectedRole]'), 'Missões por profissão ausentes');
 assert.ok(html.includes('code === "Tab"'), 'Troca por Tab ausente');
 assert.ok(html.includes('code === "KeyV"'), 'Troca por V ausente');
+assert.ok(html.includes('code === "KeyF"'), 'Embarque por F ausente');
+assert.ok(html.includes('function toggleBoarding()'), 'Função de embarque ausente');
+assert.ok(html.includes('id="boardBtn"'), 'Botão de embarque ausente');
 assert.ok(html.includes('bootstrap();'), 'Carregamento assíncrono ausente');
 
 const maps = JSON.parse(load('dados/mapas.json'));
@@ -33,6 +36,7 @@ const missions = JSON.parse(load('dados/missoes.json'));
 const vehicles = JSON.parse(load('dados/veiculos.json'));
 assert.equal(vehicles.length, 3, 'Frota inicial precisa ter 3 variantes');
 assert.ok(vehicles.every(v => v.speed > 0 && Array.isArray(v.scale) && v.scale.length === 3));
+assert.ok(vehicles.every(v => v.acceleration > 0 && v.drag > 0), 'Parâmetros de inércia inválidos');
 const isColor = x => typeof x === 'string' && /^#[0-9a-f]{6}$/i.test(x);
 const isText = x => typeof x === 'string' && x.trim().length > 0 && x.length <= 500;
 const isFiniteNumber = x => typeof x === 'number' && Number.isFinite(x);
@@ -50,4 +54,4 @@ for (const p of ['README.md','LICENSE','roadmap.html','pesquisa.html',
                  'manuais/primeiro-contato.html','manuais/dados-json.html']) {
   assert.ok(fs.existsSync(path.join(root, p)), 'Documento ausente: ' + p);
 }
-console.log('OK: sintaxe, mapas, profissões, missões e catálogo de veículos v0.4.');
+console.log('OK: sintaxe, mapas, profissões, missões, veículos e embarque v0.5.');
