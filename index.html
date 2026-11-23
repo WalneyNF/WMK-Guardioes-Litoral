@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WMK Guardiões do Litoral — Operação Verão v0.5.0</title>
+<title>WMK Guardiões do Litoral — Operação Verão v0.6.0</title>
 
 <style>
 :root {
@@ -997,7 +997,8 @@ button { font: inherit; }
 
 @media (max-width: 980px) {
   .menu-layout { grid-template-columns: 1fr; }
-  .role-grid { grid-template-columns: repeat(5, minmax(0,1fr)); }  .menu-wrap { max-width: 850px; }
+  .role-grid { grid-template-columns: repeat(5, minmax(0,1fr)); }
+  .menu-wrap { max-width: 850px; }
 }
 
 @media (max-width: 680px) {
@@ -1178,21 +1179,11 @@ button { font: inherit; }
     </footer>
 
     <div class="menu-controls">
-      <b>WASD</b> ou setas para se mover &nbsp;•&nbsp; <b>Shift</b> para correr &nbsp;•&nbsp; <b>E</b> para interagir
+      <b>WASD</b> ou setas para se mover &nbsp;•&nbsp; <b>Shift</b> para correr &nbsp;•&nbsp; <b>E</b> para interagir &nbsp;•&nbsp; <b>F</b> embarcar
     </div>
-    <nav style="display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px" aria-label="Documentação do jogo">
-      <a href="pesquisa.html" style="color:#78e5d6">🔎 Pesquisa de jogos</a>
-      <a href="roadmap.html" style="color:#78e5d6">🧭 Roadmap</a>
-      <a href="manuais/primeiro-contato.html" style="color:#78e5d6">📖 Manual</a>
-      <span style="color:#c1d0d8">Versão 0.5.0 (experimental)</span>
-    </nav>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
-      <button id="exportDataBtn" type="button" class="secondary-button" title="Exportar mapas, profissões e missões num único JSON">Exportar dados JSON</button>
-      <button id="importDataBtn" type="button" class="secondary-button" title="Carregar um pacote JSON válido somente nesta sessão">Importar pacote JSON</button>
-      <input id="importDataFile" type="file" accept=".json,application/json" class="hidden" aria-label="Escolher pacote JSON" />
-    </div>
-    <div id="dataStatus" role="status" aria-live="polite" style="margin-top:10px;color:#89dfd2;font-size:11px">Carregando arquivos JSON...</div>
-    <div id="menuError" class="hidden" role="alert"></div>
+    <nav style="display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px"><a href="pesquisa.html" style="color:#78e5d6">🔎 Pesquisa</a><a href="roadmap.html" style="color:#78e5d6">🧭 Roadmap</a><a href="manuais/primeiro-contato.html" style="color:#78e5d6">📖 Manual</a></nav>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px"><button id="exportDataBtn" type="button" class="secondary-button">Exportar dados JSON</button><button id="importDataBtn" type="button" class="secondary-button">Importar pacote JSON</button><input id="importDataFile" type="file" accept=".json,application/json" class="hidden"/></div>
+    <div id="dataStatus" role="status" style="margin-top:10px;color:#89dfd2;font-size:11px">Carregando arquivos JSON...</div><div id="menuError" class="hidden" role="alert"></div>
   </div>
 </div>
 
@@ -1210,9 +1201,9 @@ button { font: inherit; }
     <div class="radio-status"><span class="status-dot"></span> RÁDIO ONLINE</div>
     <div id="shiftClock" class="clock-box">00:00</div>
     <button id="fullscreenBtn" class="icon-button" type="button" title="Tela cheia">⛶</button>
-    <button id="boardBtn" class="icon-button hidden" type="button" title="Embarcar ou desembarcar (F)" aria-label="Embarcar ou desembarcar" style="width:auto;padding:0 8px;font-size:11px">⚓ F</button>
-    <button id="vehicleBtn" class="icon-button hidden" type="button" title="Trocar embarcação marítima (V)" aria-label="Trocar embarcação" style="width:auto;padding:0 8px;font-size:11px;font-weight:800">🚤 V</button>
-    <button id="switchBtn" class="icon-button" type="button" title="Alternar profissional (Tab)" aria-label="Alternar profissional (Tab)" style="width:auto;padding:0 8px;font-size:11px;font-weight:900">⇄ TAB</button>
+    <button id="boardBtn" class="icon-button hidden" type="button" title="Embarcar ou desembarcar (F)" aria-label="Embarcar ou desembarcar" style="width:auto;padding:0 7px;font-size:11px">⚓ F</button>
+    <button id="vehicleBtn" class="icon-button hidden" type="button" title="Trocar embarcação (V)" style="width:auto;padding:0 8px;font-size:11px">🚤 V</button>
+    <button id="switchBtn" class="icon-button" type="button" title="Alternar profissional (Tab)" style="width:auto;padding:0 8px;font-size:11px">⇄ TAB</button>
     <button id="pauseBtn" class="icon-button" type="button" title="Pausar">Ⅱ</button>
   </div>
 
@@ -1263,7 +1254,7 @@ button { font: inherit; }
   <div class="controls-card">
     <strong><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span></strong>
     mover &nbsp; <span class="key">SHIFT</span> correr<br>
-    <span class="key">E</span> interagir &nbsp; • &nbsp; <span class="key">ESC</span> pausar &nbsp; • &nbsp; <span class="key">TAB</span> trocar profissão &nbsp; • &nbsp; <span class="key">V</span> trocar embarcação &nbsp; • &nbsp; <span class="key">F</span> embarcar/desembarcar
+    <span class="key">E</span> interagir &nbsp; • &nbsp; <span class="key">ESC</span> pausar &nbsp; • &nbsp; <span class="key">TAB</span> trocar &nbsp; • &nbsp; <span class="key">V</span> embarcação &nbsp; • &nbsp; <span class="key">F</span> embarcar/desembarcar
   </div>
 
   <div class="action-dock">
@@ -1319,6 +1310,7 @@ button { font: inherit; }
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/terrestres.js"></script>
 <script>
 (() => {
   "use strict";
@@ -1331,6 +1323,8 @@ button { font: inherit; }
 
   let MISSIONS = {};
   let VEHICLES = [];
+  let LAND_CONFIG = [];
+  let landSystem = null;
 
   const TYPE_STYLE = {
     rescue:   { color: 0xff626b, icon: "!" },
@@ -1359,6 +1353,7 @@ button { font: inherit; }
   let squad = Object.create(null);
   let roleSessions = Object.create(null);
   let selectedMarineVehicle = "lancha";
+  let vesselMode = "arcade";
 
   let scene, camera, renderer, worldGroup;
   let player = null;
@@ -1396,44 +1391,46 @@ button { font: inherit; }
   const mapById = (id) => MAPS.find((m) => m.id === id);
   const roleById = (id) => ROLES.find((r) => r.id === id);
 
-
-  // Validação dos arquivos de dados antes que qualquer conteúdo seja apresentado.
   const isColor = value => typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value);
   const isText = value => typeof value === "string" && value.trim().length > 0 && value.length <= 500;
   const isFiniteNumber = value => typeof value === "number" && Number.isFinite(value);
   const isId = value => typeof value === "string" && /^[a-z0-9_-]{1,40}$/.test(value);
-  const escapeHTML = value => String(value).replace(/[&<>"']/g, ch => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  }[ch]));
-
+  const escapeHTML = value => String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   function validateVehicles(vehicles) {
-    if (!Array.isArray(vehicles) || vehicles.length < 1 || vehicles.length > 20)
-      throw new Error("veiculos.json deve conter entre 1 e 20 veículos.");
-    const ids = new Set();
-    for (const v of vehicles) {
-      if (!isId(v.id) || ids.has(v.id) || ![v.name,v.icon,v.category,v.model].every(isText) ||
-        ![v.hull,v.accent].every(isColor) || !isFiniteNumber(v.speed) ||
-        v.speed <= 0 || v.speed > 50 || !Array.isArray(v.scale) ||
-        v.scale.length !== 3 || !v.scale.every(n => isFiniteNumber(n) && n > 0 && n <= 3))
-        throw new Error("Veículo inválido/duplicado: " + String(v.id));
-      ids.add(v.id);
-    }
+    if(!Array.isArray(vehicles)||!vehicles.length||vehicles.length>20)throw Error('veiculos.json deve conter de 1 a 20 veículos');
+    const ids=new Set();
+    for(const v of vehicles){if(!isId(v.id)||ids.has(v.id)||![v.name,v.icon,v.category,v.model].every(isText)||![v.hull,v.accent].every(isColor)||!isFiniteNumber(v.speed)||v.speed<=0||v.speed>50||!Array.isArray(v.scale)||v.scale.length!==3||!v.scale.every(n=>isFiniteNumber(n)&&n>0&&n<=3))throw Error('Veículo inválido: '+v.id);ids.add(v.id);}
   }
-  function vehicleById(id) { return VEHICLES.find(v => v.id === id) || VEHICLES[0]; }
-  function updateBoardButton() {
+  function vehicleById(id){return VEHICLES.find(v=>v.id===id)||VEHICLES[0];}
+  function updateBoardButton(){
     const button = $("boardBtn");
     if (!button) return;
-    button.classList.toggle("hidden", !active || selectedRole !== "marine");
+    button.classList.toggle("hidden", !active);
+    if (selectedRole !== "marine") {
+      const vehicle=landSystem?.details(player);
+      button.textContent=vehicle ? "🚶 F" : "🚗 F";
+      button.title=vehicle ? "Sair de: " + vehicle.name : "Embarcar em veículo terrestre próximo (F)";
+      return;
+    }
     if (selectedRole === "marine") {
       button.textContent = player?.onFoot ? "🚤 F" : "🚶 F";
-      button.title = player?.onFoot ? "Embarcar perto do barco (F)" : "Desembarcar junto à costa (F)";
+      button.title = player?.onFoot ? "Embarcar próximo à lancha (F)" : "Desembarcar próximo à costa (F)";
     }
   }
-  function toggleBoarding() {
+  function toggleBoarding(){
+    if (selectedRole !== "marine") {
+      if (!active || paused || !landSystem) return;
+      const result=landSystem.toggle(player);
+      updateBoardButton();
+      if (result.ok) {setCameraToPlayer();updateHUD(true);}
+      showToast(result.message,result.ok?'good':'warn');
+      return;
+    }
+
     if (!active || paused || selectedRole !== "marine" || !player) return;
     const marine = player;
     if (!marine.onFoot) {
-      if (marine.x > 19.5) { showToast("Aproxime a embarcação da costa (X ≤ 19).", "warn"); return; }
+      if (marine.x > 19.5) { showToast("Aproxime a embarcação da faixa costeira (X ≤ 19).", "warn"); return; }
       marine.vx = 0; marine.vz = 0;
       marine.boatActor = marine.actor;
       marine.boatX = marine.x; marine.boatZ = marine.z;
@@ -1444,186 +1441,50 @@ button { font: inherit; }
       worldGroup.add(foot);
       marine.actor = foot;
       marine.onFoot = true;
-      showToast("Desembarcou. F para embarcar novamente.", "good");
+      showToast("Desembarcou. F para embarcar próximo à embarcação.", "good");
     } else {
       const distance = Math.hypot(marine.x - marine.boatX, marine.z - marine.boatZ);
       if (distance > 4.5) {showToast("Aproxime-se da embarcação ("+Math.round(distance)+" m).", "warn");return;}
       worldGroup.remove(marine.actor); disposeTree(marine.actor);
       marine.actor = marine.boatActor;
-      marine.x = marine.boatX; marine.z = marine.boatZ;
-      marine.onFoot = false; marine.vx = 0; marine.vz = 0;
+      marine.x = marine.boatX;
+      marine.z = marine.boatZ;
+      marine.onFoot = false;
+      marine.vx = 0; marine.vz = 0;
       showToast("Embarcou: " + vehicleById(marine.vehicleId).name, "good");
     }
     updateBoardButton(); updateVehicleButton(); setCameraToPlayer(); updateHUD(true);
   }
-  function updateVehicleButton() {
-    const button = $("vehicleBtn");
-    if (!button) return;
-    button.classList.toggle("hidden", !active || selectedRole !== "marine");
-    if (selectedRole === "marine") {
-      const selected = vehicleById(selectedMarineVehicle);
-      button.textContent = (selected?.icon || "🚤") + " V";
-      button.title = "Trocar embarcação (V): " + (selected?.name || "Lancha");
+  function updateVehicleButton(){const button=$('vehicleBtn');if(!button)return;button.classList.toggle('hidden',!active||selectedRole!=='marine');if(selectedRole==='marine'){const v=vehicleById(selectedMarineVehicle);button.textContent=(v?.icon||'🚤')+' V';button.title='Trocar embarcação (V): '+(v?.name||'Lancha');}}
+  function switchMarineVehicle(){if(!active||paused||selectedRole!=='marine'||!player||!VEHICLES.length)return;if(player.onFoot){showToast('Embarque antes de trocar a embarcação.','warn');return;}if(Math.hypot(player.vx||0,player.vz||0)>1.5){showToast('Pare a embarcação para trocar o modelo.','warn');return;}const i=VEHICLES.findIndex(v=>v.id===selectedMarineVehicle);selectedMarineVehicle=VEHICLES[(i+1)%VEHICLES.length].id;const variant=vehicleById(selectedMarineVehicle);const old=player.actor;const actor=makeBoatActor(player.role,variant);actor.position.copy(old.position);actor.rotation.copy(old.rotation);worldGroup.add(actor);worldGroup.remove(old);disposeTree(old);player.actor=actor;player.boatActor=actor;player.vehicleId=selectedMarineVehicle;player.vx=0;player.vz=0;updateVehicleButton();showToast('Embarcação: '+variant.name+' · '+variant.speed+' u/s','good');}
+  function validateLandVehicles(data) {
+    if (!Array.isArray(data) || data.length < 2 || data.length > 12) throw Error('É necessário cadastrar de 2 a 12 veículos terrestres.');
+    const ids = new Set();
+    for (const cfg of data) {
+      if (!isId(cfg.id) || ids.has(cfg.id) || ![cfg.name,cfg.icon,cfg.model,cfg.category].every(isText) ||
+          ![cfg.hull,cfg.accent].every(isColor) || ![cfg.speed,cfg.acceleration,cfg.drag].every(n => isFiniteNumber(n) && n > 0 && n <= 50) ||
+          !Array.isArray(cfg.spawn) || cfg.spawn.length !== 2 || !cfg.spawn.every(isFiniteNumber) ||
+          cfg.spawn[0] < -41.5 || cfg.spawn[0] > -33 || Math.abs(cfg.spawn[1]) > 46)
+        throw Error('Veículo terrestre inválido: ' + String(cfg.id));
+      ids.add(cfg.id);
     }
   }
-  function switchMarineVehicle() {
-    if (!active || paused || selectedRole !== "marine" || !player || !VEHICLES.length) return;
-    if (player.onFoot) { showToast("Embarque antes de trocar embarcação.", "warn"); return; }
-    if (Math.hypot(player.vx || 0, player.vz || 0) > 1.5) { showToast("Pare a embarcação antes de trocar.", "warn"); return; }
-    const index = VEHICLES.findIndex(v => v.id === selectedMarineVehicle);
-    selectedMarineVehicle = VEHICLES[(index + 1) % VEHICLES.length].id;
-    const variant = vehicleById(selectedMarineVehicle);
-    const previous = player.actor;
-    const actor = makeBoatActor(player.role, variant);
-    actor.position.copy(previous.position);
-    actor.rotation.copy(previous.rotation);
-    worldGroup.add(actor);
-    worldGroup.remove(previous);
-    disposeTree(previous);
-    player.actor = actor;
-    player.boatActor = actor;
-    player.vehicleId = selectedMarineVehicle;
-    player.vx = 0; player.vz = 0;
-    updateVehicleButton();
-    showToast("Embarcação selecionada: " + variant.name + " · " + variant.speed + " u/s", "good");
+  function validateData(maps,roles,missions){
+    if(!Array.isArray(maps)||!maps.length||maps.length>30)throw Error('mapas.json precisa conter entre 1 e 30 mapas.');
+    if(!Array.isArray(roles)||!roles.length||roles.length>30)throw Error('profissoes.json precisa conter entre 1 e 30 profissões.');
+    if(!missions||typeof missions!=="object"||Array.isArray(missions))throw Error('missoes.json precisa ser objeto.');
+    const ids=new Set(),rids=new Set();
+    for(const m of maps){if(!isId(m.id)||ids.has(m.id)||![m.name,m.region,m.icon,m.description].every(isText)||![m.sky,m.fog,m.sand,m.water,m.shallow].every(isColor)||!m.offset||!isFiniteNumber(m.offset.x)||!isFiniteNumber(m.offset.z))throw Error('Mapa inválido: '+m.id);ids.add(m.id);}
+    for(const r of roles){if(!isId(r.id)||rids.has(r.id)||![r.name,r.icon,r.short,r.code].every(isText)||![r.accent,r.shirt,r.pants,r.cap].every(isColor)||!isFiniteNumber(r.speed)||r.speed<=0||r.speed>50||typeof r.vehicle!=="boolean"||!Array.isArray(r.spawn)||r.spawn.length!==2||!r.spawn.every(isFiniteNumber))throw Error('Profissão inválida: '+r.id);rids.add(r.id);}
+    for(const id of rids){const list=missions[id];if(!Array.isArray(list)||!list.length||list.length>100)throw Error('Missões ausentes para '+id);for(const mission of list){if(!isText(mission.title)||!isText(mission.description)||!Array.isArray(mission.steps)||!mission.steps.length||mission.steps.length>30)throw Error('Missão inválida: '+id);for(const step of mission.steps){if(![step.type,step.title,step.detail,step.action].every(isText)||!isFiniteNumber(step.x)||!isFiniteNumber(step.z)||!isFiniteNumber(step.reward)||step.reward<0||(step.callSeconds!==undefined&&(!isFiniteNumber(step.callSeconds)||step.callSeconds<=0)))throw Error('Etapa inválida: '+step.title);}}}
+    for(const id of Object.keys(missions))if(!rids.has(id))throw Error('Missões sem profissão: '+id);
   }
-
-  function validateData(maps, roles, missions) {
-    if (!Array.isArray(maps) || !maps.length || maps.length > 30) throw new Error("mapas.json precisa conter entre 1 e 30 mapas.");
-    if (!Array.isArray(roles) || !roles.length || roles.length > 30) throw new Error("profissoes.json precisa conter entre 1 e 30 profissões.");
-    if (!missions || typeof missions !== "object" || Array.isArray(missions)) throw new Error("missoes.json precisa ser um objeto.");
-    const mapIds = new Set(), roleIds = new Set();
-    for (const m of maps) {
-      if (!isId(m.id) || mapIds.has(m.id) || ![m.name,m.region,m.icon,m.description].every(isText) ||
-          ![m.sky,m.fog,m.sand,m.water,m.shallow].every(isColor) ||
-          !m.offset || !isFiniteNumber(m.offset.x) || !isFiniteNumber(m.offset.z))
-        throw new Error("Mapa inválido ou duplicado: " + String(m.id));
-      mapIds.add(m.id);
-    }
-    for (const r of roles) {
-      if (!isId(r.id) || roleIds.has(r.id) || ![r.name,r.icon,r.short,r.code].every(isText) ||
-          ![r.accent,r.shirt,r.pants,r.cap].every(isColor) ||
-          !isFiniteNumber(r.speed) || r.speed <= 0 || r.speed > 50 ||
-          typeof r.vehicle !== "boolean" || !Array.isArray(r.spawn) ||
-          r.spawn.length !== 2 || !r.spawn.every(isFiniteNumber))
-        throw new Error("Profissão inválida ou duplicada: " + String(r.id));
-      roleIds.add(r.id);
-    }
-    for (const id of roleIds) {
-      const list = missions[id];
-      if (!Array.isArray(list) || !list.length || list.length > 100) throw new Error("Missões ausentes para " + id);
-      for (const mission of list) {
-        if (!isText(mission.title) || !isText(mission.description) ||
-            !Array.isArray(mission.steps) || !mission.steps.length || mission.steps.length > 30)
-          throw new Error("Missão inválida em " + id);
-        for (const step of mission.steps) {
-          if (![step.type,step.title,step.detail,step.action].every(isText) ||
-              !isFiniteNumber(step.x) || !isFiniteNumber(step.z) ||
-              !isFiniteNumber(step.reward) || step.reward < 0 ||
-              (step.callSeconds !== undefined && (!isFiniteNumber(step.callSeconds) || step.callSeconds <= 0)))
-            throw new Error("Etapa inválida em " + id + ": " + String(step.title));
-        }
-      }
-    }
-    for (const key of Object.keys(missions)) if (!roleIds.has(key)) throw new Error("Missões sem profissão: " + key);
-  }
-
-  async function fetchJSON(path) {
-    const response = await fetch(path, { cache: "no-store" });
-    if (!response.ok) throw new Error(path + ": HTTP " + response.status);
-    return response.json();
-  }
-
-  function exportDataBundle() {
-    if (!MAPS.length || !ROLES.length) return;
-    const payload = { schemaVersion: 2, maps: MAPS, roles: ROLES, missions: MISSIONS, vehicles: VEHICLES };
-    const blob = new Blob([JSON.stringify(payload, null, 2) + "\n"], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "wmk-guardioes-litoral-dados-v2.json";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-
-  async function importDataBundle(file) {
-    if (!file) return;
-    if (active) { showToast("Encerre o turno antes de importar dados.", "warn"); return; }
-    try {
-      if (file.size > 2 * 1024 * 1024) throw new Error("O pacote JSON não pode ultrapassar 2 MB.");
-      const parsed = JSON.parse(await file.text());
-      if (!parsed || parsed.schemaVersion !== 2) throw new Error("schemaVersion deve ser 2.");
-      validateData(parsed.maps, parsed.roles, parsed.missions);
-      validateVehicles(parsed.vehicles);
-      MAPS = parsed.maps; ROLES = parsed.roles; MISSIONS = parsed.missions; VEHICLES = parsed.vehicles;
-      selectedMarineVehicle = VEHICLES[0].id;
-      if (!MAPS.some(m => m.id === selectedMap)) selectedMap = MAPS[0].id;
-      if (!ROLES.some(r => r.id === selectedRole)) selectedRole = ROLES[0].id;
-      roleSessions = Object.create(null);
-      savePreferences();
-      renderSelection();
-      if (scene) createWorld(selectedMap);
-      $("dataStatus").textContent = "Pacote importado nesta sessão: " + MAPS.length +
-        " mapas, " + ROLES.length + " profissões.";
-      $("menuError").classList.add("hidden");
-    } catch (error) {
-      console.error("Importação rejeitada:", error);
-      $("menuError").textContent = "Pacote rejeitado: " + error.message;
-      $("menuError").classList.remove("hidden");
-    } finally {
-      $("importDataFile").value = "";
-    }
-  }
-
-  function readPreferences() {
-    try {
-      const stored = JSON.parse(localStorage.getItem("wmk-litoral-preferences-v1") || "{}");
-      if (MAPS.some(m => m.id === stored.map)) selectedMap = stored.map;
-      if (ROLES.some(r => r.id === stored.role)) selectedRole = stored.role;
-    } catch (error) { console.warn("Preferências indisponíveis:", error); }
-  }
-
-  function savePreferences() {
-    try {
-      localStorage.setItem("wmk-litoral-preferences-v1",
-        JSON.stringify({ map: selectedMap, role: selectedRole }));
-    } catch (error) { console.warn("Não foi possível salvar preferências:", error); }
-  }
-
-  async function bootstrap() {
-    const start = $("startBtn");
-    start.disabled = true;
-    try {
-      if (location.protocol === "file:") {
-        throw new Error("Abra o jogo por http://localhost:8000 ou outro servidor HTTP. O navegador bloqueia a leitura dos arquivos JSON usando file://.");
-      }
-      const [maps, roles, missions, vehicles] = await Promise.all([
-        fetchJSON("dados/mapas.json"), fetchJSON("dados/profissoes.json"), fetchJSON("dados/missoes.json"), fetchJSON("dados/veiculos.json")
-      ]);
-      validateData(maps, roles, missions);
-      validateVehicles(vehicles);
-      MAPS = maps; ROLES = roles; MISSIONS = missions; VEHICLES = vehicles;
-      selectedMarineVehicle = VEHICLES[0].id;
-      readPreferences();
-      renderSelection();
-      initThree();
-      installControls();
-      if (!renderer) throw new Error("Não foi possível inicializar WebGL no navegador.");
-      start.disabled = false;
-      $("dataStatus").textContent = "Dados carregados: " + MAPS.length + " mapas, " +
-        ROLES.length + " profissões e " +
-        Object.values(MISSIONS).reduce((sum, list) => sum + list.length, 0) + " missões.";
-    } catch (error) {
-      console.error("Falha de carregamento do jogo:", error);
-      $("dataStatus").textContent = "Falha ao carregar os arquivos de dados.";
-      $("menuError").textContent = "Erro: " + error.message;
-      $("menuError").classList.remove("hidden");
-      start.disabled = true;
-    }
-  }
-
+  async function fetchJSON(path){const response=await fetch(path,{cache:"no-store"});if(!response.ok)throw Error(path+': HTTP '+response.status);return response.json();}
+  function readPreferences(){try{const v=JSON.parse(localStorage.getItem('wmk-litoral-preferences-v1')||'{}');if(MAPS.some(m=>m.id===v.map))selectedMap=v.map;if(ROLES.some(r=>r.id===v.role))selectedRole=v.role;}catch(error){console.warn(error);}}
+  function savePreferences(){try{localStorage.setItem('wmk-litoral-preferences-v1',JSON.stringify({map:selectedMap,role:selectedRole}));}catch(error){console.warn(error);}}
+  function exportDataBundle(){if(!MAPS.length)return;const payload={schemaVersion:2,maps:MAPS,roles:ROLES,missions:MISSIONS,vehicles:VEHICLES};const blob=new Blob([JSON.stringify(payload,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='wmk-guardioes-litoral-dados-v2.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  async function importDataBundle(file){if(!file||active)return;try{if(file.size>2097152)throw Error('Pacote acima de 2 MB.');const data=JSON.parse(await file.text());if(!data||data.schemaVersion!==2)throw Error('schemaVersion precisa ser 2');validateData(data.maps,data.roles,data.missions);validateVehicles(data.vehicles);MAPS=data.maps;ROLES=data.roles;MISSIONS=data.missions;VEHICLES=data.vehicles;selectedMarineVehicle=VEHICLES[0].id;if(!MAPS.some(m=>m.id===selectedMap))selectedMap=MAPS[0].id;if(!ROLES.some(r=>r.id===selectedRole))selectedRole=ROLES[0].id;roleSessions=Object.create(null);savePreferences();renderSelection();if(scene)createWorld(selectedMap);$("dataStatus").textContent='Pacote carregado nesta sessão.';$("menuError").classList.add('hidden');}catch(error){$("menuError").textContent='Pacote rejeitado: '+error.message;$("menuError").classList.remove('hidden');}finally{$("importDataFile").value='';}}
+  async function bootstrap(){const start=$("startBtn");start.disabled=true;try{if(location.protocol==='file:')throw Error('Utilize http://localhost:8000: JSON não carrega via file://');const [maps,roles,missions,vehicles,landVehicles]=await Promise.all([fetchJSON('dados/mapas.json'),fetchJSON('dados/profissoes.json'),fetchJSON('dados/missoes.json'),fetchJSON('dados/veiculos.json'),fetchJSON('dados/veiculos-terrestres.json')]);validateData(maps,roles,missions);validateVehicles(vehicles);validateLandVehicles(landVehicles);MAPS=maps;ROLES=roles;MISSIONS=missions;VEHICLES=vehicles;LAND_CONFIG=landVehicles;landSystem=window.WMKTerrestres.create(THREE);selectedMarineVehicle=VEHICLES[0].id;readPreferences();renderSelection();initThree();installControls();if(!renderer)throw Error('WebGL indisponível');start.disabled=false;$("dataStatus").textContent='Dados carregados: '+MAPS.length+' mapas, '+ROLES.length+' profissões.';}catch(error){console.error(error);$("menuError").textContent='Erro: '+error.message;$("menuError").classList.remove('hidden');$("dataStatus").textContent='Falha ao carregar dados.';start.disabled=true;}}
   function renderSelection() {
     $("mapGrid").innerHTML = MAPS.map((map) => `
       <button class="map-card ${map.id === selectedMap ? "active" : ""}" type="button" data-map="${map.id}">
@@ -1885,11 +1746,8 @@ button { font: inherit; }
       addBox(group, .09, .18, .7, "#f4efe2", side * .57, .59, .38);
     }
 
-    if (vehicle?.model === "jetski") {
-      group.children[2].visible = false;
-      group.children[3].visible = false;
-    }
-    if (vehicle?.scale) group.scale.set(...vehicle.scale);
+    if(vehicle?.model==='jetski'){group.children[2].visible=false;group.children[3].visible=false;}
+    if(vehicle?.scale)group.scale.set(...vehicle.scale);
     group.userData.isBoat = true;
     group.userData.limbs = driver.userData.limbs;
     group.userData.driver = driver;
@@ -1989,7 +1847,8 @@ button { font: inherit; }
     addCylinder(parent, .78, .98, .42, "#3a4c51", x, 6.65, z, 10);
     const roof = new THREE.Mesh(new THREE.ConeGeometry(1.12, .95, 10), standard("#b94f46"));
     roof.position.set(x, 7.3, z);
-    roof.castShadow = true;    parent.add(roof);
+    roof.castShadow = true;
+    parent.add(roof);
     addBox(parent, .7, .74, .08, "#9ce5e2", x, 6.66, z + .91, {
       materialOptions: { emissive: "#4b9a96", emissiveIntensity: .25 }
     });
@@ -2205,18 +2064,17 @@ button { font: inherit; }
       addRock(worldGroup, 36, .6, 30, [3.0, 1.8, 3.2], "#526263");
     }
 
-    // Unidades persistem no mundo ao trocar o profissional controlado.
     squad = Object.create(null);
     for (const role of ROLES) {
       const spawn = role.spawn;
-      const actor = role.vehicle ? makeBoatActor(role, vehicleById(selectedMarineVehicle)) : makePerson({
-        shirt: role.shirt, pants: role.pants, cap: role.cap, badge: role.accent
-      });
+      const actor = role.vehicle ? makeBoatActor(role,vehicleById(selectedMarineVehicle)) : makePerson({shirt:role.shirt,pants:role.pants,cap:role.cap,badge:role.accent});
       actor.position.set(spawn[0], 0, spawn[1]);
       worldGroup.add(actor);
-      squad[role.id] = { x: spawn[0], z: spawn[1], heading: 0, actor, role, vehicleId: role.vehicle ? selectedMarineVehicle : null, onFoot:false, boatActor:role.vehicle?actor:null, boatX:spawn[0], boatZ:spawn[1], vx:0, vz:0 };
+      squad[role.id] = { x: spawn[0], z: spawn[1], heading: 0, actor, role, vehicleId: role.vehicle ? selectedMarineVehicle : null, onFoot:false, boatActor: role.vehicle ? actor : null, boatX:spawn[0], boatZ:spawn[1], vx:0, vz:0 };
     }
     player = squad[selectedRole];
+    if (landSystem) landSystem.spawn(worldGroup, LAND_CONFIG);
+
     setPreviewCamera();
   }
 
@@ -2532,57 +2390,20 @@ button { font: inherit; }
   }
 
   function saveRoleSession() {
-    roleSessions[selectedRole] = {
-      missionIndex, stepIndex, currentMission,
-      step: state.currentStep ? { ...state.currentStep } : null,
-      rescueRemaining: state.rescueRemaining,
-      rescueLate: state.rescueLate,
-      transition: state.transition,
-      stamina: state.stamina
-    };
+    roleSessions[selectedRole] = {missionIndex,stepIndex,currentMission,step:state.currentStep?{...state.currentStep}:null,rescueRemaining:state.rescueRemaining,rescueLate:state.rescueLate,transition:state.transition,stamina:state.stamina};
   }
-
   function switchRole() {
     if (!active || paused || !player) return;
-    const index = ROLES.findIndex(role => role.id === selectedRole);
-    const nextRole = ROLES[(index + 1) % ROLES.length];
-    saveRoleSession();
-    clearTarget();
-    selectedRole = nextRole.id;
-    player = squad[selectedRole];
-    clearKeys();
-    const saved = roleSessions[selectedRole];
-    if (saved) {
-      missionIndex = saved.missionIndex;
-      stepIndex = saved.stepIndex;
-      currentMission = saved.currentMission;
-      state.currentStep = saved.step;
-      state.rescueRemaining = saved.rescueRemaining;
-      state.rescueLate = saved.rescueLate;
-      state.transition = saved.transition;
-      state.stamina = saved.stamina;
-      if (saved.step) {
-        const offset = mapById(selectedMap).offset;
-        createTarget({ ...saved.step, x: saved.step.x - offset.x, z: saved.step.z - offset.z });
-      }
-    } else {
-      missionIndex = 0;
-      stepIndex = 0;
-      currentMission = null;
-      state.currentStep = null;
-      state.rescueRemaining = null;
-      state.rescueLate = false;
-      state.transition = 0;
-      state.stamina = 100;
-      beginMission();
-    }
-    setCameraToPlayer();
-    updateHUD(true);
-    updateVehicleButton();
-    updateBoardButton();
-    showToast(`Controle assumido: ${nextRole.icon} ${nextRole.name}`, "good");
+    const next=ROLES[(ROLES.findIndex(role=>role.id===selectedRole)+1)%ROLES.length];
+    saveRoleSession();clearTarget();selectedRole=next.id;player=squad[selectedRole];clearKeys();
+    const saved=roleSessions[selectedRole];
+    if(saved){
+      missionIndex=saved.missionIndex;stepIndex=saved.stepIndex;currentMission=saved.currentMission;
+      state.currentStep=saved.step;state.rescueRemaining=saved.rescueRemaining;state.rescueLate=saved.rescueLate;state.transition=saved.transition;state.stamina=saved.stamina;
+      if(saved.step){const offset=mapById(selectedMap).offset;createTarget({...saved.step,x:saved.step.x-offset.x,z:saved.step.z-offset.z});}
+    }else{missionIndex=0;stepIndex=0;currentMission=null;state.currentStep=null;state.rescueRemaining=null;state.rescueLate=false;state.transition=0;state.stamina=100;beginMission();}
+    setCameraToPlayer();updateHUD(true);updateVehicleButton();updateBoardButton();showToast(`Controle assumido: ${next.icon} ${next.name}`,"good");
   }
-
   function beginMission() {
     const list = MISSIONS[selectedRole];
     currentMission = list[missionIndex % list.length];
@@ -2991,7 +2812,11 @@ button { font: inherit; }
     let dz = (keys.s ? 1 : 0) - (keys.w ? 1 : 0);
     const moving = Math.hypot(dx, dz) > .01;
 
-    if (moving) {
+    if (player.landVehicle) {
+      if (moving) { const len=Math.hypot(dx,dz);dx/=len;dz/=len; }
+      landSystem.move(player,dx,dz,dt);
+      state.stamina=Math.min(100,state.stamina+15*dt);
+    } else if (moving) {
       const length = Math.hypot(dx, dz);
       dx /= length;
       dz /= length;
@@ -2999,6 +2824,7 @@ button { font: inherit; }
       const piloting = role.vehicle && !player.onFoot;
       let speed = piloting ? (vehicleById(player.vehicleId)?.speed || role.speed) : (role.vehicle ? 7.2 : role.speed);
       if (!piloting && player.x > 8) speed *= .68;
+
       const sprinting = keys.shift && !piloting && state.stamina > 1;
       if (sprinting) {
         speed *= 1.48;
@@ -3009,7 +2835,8 @@ button { font: inherit; }
 
       if (piloting) {
         const config = vehicleById(player.vehicleId);
-        const blend = 1 - Math.exp(-(config?.acceleration ?? 2.8) * dt);
+        const responsiveness = config?.acceleration ?? 2.8;
+        const blend = 1 - Math.exp(-responsiveness * dt);
         player.vx += (dx * speed - player.vx) * blend;
         player.vz += (dz * speed - player.vz) * blend;
         player.x += player.vx * dt;
@@ -3034,7 +2861,8 @@ button { font: inherit; }
     } else {
       state.stamina = Math.min(100, state.stamina + 15 * dt);
       if (role.vehicle && !player.onFoot) {
-        const damping = Math.exp(-(vehicleById(player.vehicleId)?.drag ?? 2.1) * dt);
+        const resistance = vehicleById(player.vehicleId)?.drag ?? 2.1;
+        const damping = Math.exp(-resistance * dt);
         player.vx *= damping; player.vz *= damping;
         player.x = Math.max(13, Math.min(44, player.x + player.vx * dt));
         player.z = Math.max(-48, Math.min(48, player.z + player.vz * dt));
@@ -3044,7 +2872,7 @@ button { font: inherit; }
     }
 
     const limbs = player.actor.userData.limbs;
-    if (limbs) {
+    if (limbs && !player.landVehicle) {
       const amount = moving ? (keys.shift && (!role.vehicle || player.onFoot) ? 1 : .72) : .06;
       for (let i = 0; i < limbs.legs.length; i++) {
         const phase = time * 10 + i * Math.PI;
@@ -3056,7 +2884,8 @@ button { font: inherit; }
       }
     }
 
-    if (markerFloat) {      markerFloat.position.y = 2.72 + Math.sin(time * 2.7) * .20;
+    if (markerFloat) {
+      markerFloat.position.y = 2.72 + Math.sin(time * 2.7) * .20;
       markerFloat.rotation.y = time * .45;
     }
 
@@ -3100,12 +2929,12 @@ button { font: inherit; }
 
   function installControls() {
     $("startBtn").addEventListener("click", startGame);
-    $("exportDataBtn").addEventListener("click", exportDataBundle);
-    $("importDataBtn").addEventListener("click", () => $("importDataFile").click());
-    $("importDataFile").addEventListener("change", event => importDataBundle(event.target.files[0]));
     $("switchBtn").addEventListener("click", switchRole);
     $("vehicleBtn").addEventListener("click", switchMarineVehicle);
     $("boardBtn").addEventListener("click", toggleBoarding);
+    $("exportDataBtn").addEventListener("click", exportDataBundle);
+    $("importDataBtn").addEventListener("click",()=>$("importDataFile").click());
+    $("importDataFile").addEventListener("change",e=>importDataBundle(e.target.files[0]));
     $("actionBtn").addEventListener("click", interact);
     $("pauseBtn").addEventListener("click", () => togglePause());
     $("resumeBtn").addEventListener("click", () => togglePause(false));
@@ -3123,17 +2952,9 @@ button { font: inherit; }
 
     document.addEventListener("keydown", (event) => {
       const code = event.code;
-      if (code === "KeyF" && active && !event.repeat) {event.preventDefault();toggleBoarding();return;}
-      if (code === "KeyV" && active && !event.repeat) {
-        event.preventDefault();
-        switchMarineVehicle();
-        return;
-      }
-      if (code === "Tab" && active) {
-        event.preventDefault();
-        if (!event.repeat) switchRole();
-        return;
-      }
+      if(code==="KeyF"&&active&&!event.repeat){event.preventDefault();toggleBoarding();return;}
+      if(code==="KeyV"&&active&&!event.repeat){event.preventDefault();switchMarineVehicle();return;}
+      if(code==="Tab"&&active){event.preventDefault();if(!event.repeat)switchRole();return;}
 
       const keyMap = {
         KeyW: "w", ArrowUp: "w",
@@ -3254,7 +3075,6 @@ button { font: inherit; }
   bootstrap();
 })();
 </script>
-
 <div class="wmk-credits" aria-label="Créditos do projeto">WMK Guardiões do Litoral · v0.5.0 · <a href="mailto:walneyk@hotmail.com">Walney Moreira Klein — walneyk@hotmail.com</a></div>
 <style>.wmk-credits{position:fixed;left:10px;bottom:5px;z-index:7;font-size:10px;color:#d1e5e7;background:rgba(5,24,37,.68);padding:4px 9px;border-radius:7px;pointer-events:auto}.wmk-credits a{color:#6de2d0;text-decoration:none}@media(max-width:680px){.wmk-credits{font-size:8px;bottom:auto;top:54px;max-width:55vw}}</style>
 </body>
