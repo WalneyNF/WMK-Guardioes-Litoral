@@ -2,7 +2,7 @@
 
 **Simulador 3D de patrulha, salvamento, investigação e proteção ambiental em praias brasileiras.**
 
-**Versão experimental atual:** 0.4.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
+**Versão experimental atual:** 0.5.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
 
 **Desenvolvimento e adaptação WMK:** **Walney Moreira Klein** — [walneyk@hotmail.com](mailto:walneyk@hotmail.com).
 
@@ -36,7 +36,8 @@
 | E | Interagir com objetivo próximo |
 | Esc | Pausar/retomar |
 | Tab ou ⇄ TAB | Alternar profissional durante o turno |
-| V ou 🚤 V | Alternar lancha / jet ski / bote controlando a patrulha marítima |
+| V ou 🚤 V | Trocar embarcação quando parado e embarcado |
+| F ou ⚓ F | Embarcar/desembarcar com patrulha marítima próxima da costa |
 | Botão ⛶ | Tela cheia |
 
 Em telas pequenas, existem botões de movimento e corrida. A jogabilidade usa objetivos guiados; atividades reais de salvamento e segurança exigem treinamento profissional.
@@ -114,3 +115,11 @@ Execute `node tests/validar.js` para verificar sintaxe e integridade estática. 
 A função **Patrulha marítima** pode trocar entre **Lancha de patrulha**, **Jet ski de resgate** e **Bote inflável** usando `V` ou o botão 🚤 V na HUD. Cada embarcação usa parâmetros em `dados/veiculos.json`: `id`, `name`, `icon`, `speed`, `scale`, `hull`, `accent`, `model`. A troca preserva posição, orientação e missão do profissional. Os visuais são procedurais simplificados; não são modelos GLB definitivos. A movimentação ainda é arcade, sem inércia ou colisão naval detalhada.
 
 **Pacote JSON atualizado:** exportação e importação usam `schemaVersion: 2`, incluindo agora `vehicles`. Pacotes da v0.3 precisam ser atualizados para esse formato. A importação afeta somente a sessão aberta.
+
+## v0.5.0 — embarque, desembarque e movimentação inercial
+
+Na função **Patrulha marítima**, aproxime a embarcação da costa (coordenada X até 19,5), pare e pressione `F` para desembarcar. O barco permanece na cena e você controla o profissional a pé. Caminhe para perto do barco (até 4,5 unidades) e pressione `F` para embarcar novamente. A tecla `V` troca entre lancha, jet ski e bote apenas quando embarcado e a velocidade já está baixa.
+
+As embarcações utilizam os parâmetros `acceleration` e `drag` em `dados/veiculos.json`, além de `speed`. A física continua arcade, com deslocamento vetorial e inércia aproximada — **não** é simulação hidrodinâmica realista. Os limites da água e da faixa costeira são simplificados e não há colisão detalhada com cenários. Outros profissionais ainda circulam em terra.
+
+A v0.5 está em fase experimental: validação de sintaxe/estrutura não equivale a teste completo de jogabilidade WebGL no navegador.
