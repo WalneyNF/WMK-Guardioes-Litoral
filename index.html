@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WMK Guardiões do Litoral — Operação Verão v0.6.0</title>
+<title>WMK Guardiões do Litoral — Operação Verão v0.7.0</title>
 
 <style>
 :root {
@@ -1181,7 +1181,7 @@ button { font: inherit; }
     <div class="menu-controls">
       <b>WASD</b> ou setas para se mover &nbsp;•&nbsp; <b>Shift</b> para correr &nbsp;•&nbsp; <b>E</b> para interagir &nbsp;•&nbsp; <b>F</b> embarcar
     </div>
-    <nav style="display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px"><a href="pesquisa.html" style="color:#78e5d6">🔎 Pesquisa</a><a href="roadmap.html" style="color:#78e5d6">🧭 Roadmap</a><a href="manuais/primeiro-contato.html" style="color:#78e5d6">📖 Manual</a></nav>
+    <nav style="display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px"><a href="editor-veiculos.html" style="color:#78e5d6">🛠 Editor de veículos</a><a href="pesquisa.html" style="color:#78e5d6">🔎 Pesquisa</a><a href="roadmap.html" style="color:#78e5d6">🧭 Roadmap</a><a href="manuais/primeiro-contato.html" style="color:#78e5d6">📖 Manual</a></nav>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px"><button id="exportDataBtn" type="button" class="secondary-button">Exportar dados JSON</button><button id="importDataBtn" type="button" class="secondary-button">Importar pacote JSON</button><input id="importDataFile" type="file" accept=".json,application/json" class="hidden"/></div>
     <div id="dataStatus" role="status" style="margin-top:10px;color:#89dfd2;font-size:11px">Carregando arquivos JSON...</div><div id="menuError" class="hidden" role="alert"></div>
   </div>
@@ -1399,7 +1399,7 @@ button { font: inherit; }
   function validateVehicles(vehicles) {
     if(!Array.isArray(vehicles)||!vehicles.length||vehicles.length>20)throw Error('veiculos.json deve conter de 1 a 20 veículos');
     const ids=new Set();
-    for(const v of vehicles){if(!isId(v.id)||ids.has(v.id)||![v.name,v.icon,v.category,v.model].every(isText)||![v.hull,v.accent].every(isColor)||!isFiniteNumber(v.speed)||v.speed<=0||v.speed>50||!Array.isArray(v.scale)||v.scale.length!==3||!v.scale.every(n=>isFiniteNumber(n)&&n>0&&n<=3))throw Error('Veículo inválido: '+v.id);ids.add(v.id);}
+    for(const v of vehicles){if(!isId(v.id)||ids.has(v.id)||![v.name,v.icon,v.category,v.model].every(isText)||![v.hull,v.accent].every(isColor)||!isFiniteNumber(v.speed)||v.speed<=0||v.speed>50||!Array.isArray(v.scale)||v.scale.length!==3||!v.scale.every(n=>isFiniteNumber(n)&&n>0&&n<=3)||![v.acceleration,v.drag].every(n=>isFiniteNumber(n)&&n>0&&n<=50))throw Error('Veículo inválido: '+v.id);ids.add(v.id);}
   }
   function vehicleById(id){return VEHICLES.find(v=>v.id===id)||VEHICLES[0];}
   function updateBoardButton(){
@@ -1480,11 +1480,31 @@ button { font: inherit; }
     for(const id of Object.keys(missions))if(!rids.has(id))throw Error('Missões sem profissão: '+id);
   }
   async function fetchJSON(path){const response=await fetch(path,{cache:"no-store"});if(!response.ok)throw Error(path+': HTTP '+response.status);return response.json();}
+  function loadVehicleEditorOverrides() {
+    try {
+      const value = localStorage.getItem('wmk-litoral-editor-v1');
+      if (!value) return;
+      const preset = JSON.parse(value);
+      if (!preset || preset.schemaVersion !== 1) throw Error('Versão do preset inválida.');
+      validateVehicles(preset.marine);
+      validateLandVehicles(preset.land);
+      const sameIds=(base,candidate)=>base.length===candidate.length &&
+        base.every(v=>candidate.some(c=>c.id===v.id && c.model===v.model));
+      if(!sameIds(VEHICLES,preset.marine)||!sameIds(LAND_CONFIG,preset.land))
+        throw Error('O editor deve conservar os IDs e modelos originais.');
+      VEHICLES=preset.marine;
+      LAND_CONFIG=preset.land;
+      $('dataStatus').textContent='Personalizações do Editor WMK carregadas.';
+    } catch(error) {
+      console.warn('Preset do editor ignorado:',error);
+      $('dataStatus').textContent='Preset de veículos inválido; usando a frota original.';
+    }
+  }
   function readPreferences(){try{const v=JSON.parse(localStorage.getItem('wmk-litoral-preferences-v1')||'{}');if(MAPS.some(m=>m.id===v.map))selectedMap=v.map;if(ROLES.some(r=>r.id===v.role))selectedRole=v.role;}catch(error){console.warn(error);}}
   function savePreferences(){try{localStorage.setItem('wmk-litoral-preferences-v1',JSON.stringify({map:selectedMap,role:selectedRole}));}catch(error){console.warn(error);}}
   function exportDataBundle(){if(!MAPS.length)return;const payload={schemaVersion:2,maps:MAPS,roles:ROLES,missions:MISSIONS,vehicles:VEHICLES};const blob=new Blob([JSON.stringify(payload,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='wmk-guardioes-litoral-dados-v2.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   async function importDataBundle(file){if(!file||active)return;try{if(file.size>2097152)throw Error('Pacote acima de 2 MB.');const data=JSON.parse(await file.text());if(!data||data.schemaVersion!==2)throw Error('schemaVersion precisa ser 2');validateData(data.maps,data.roles,data.missions);validateVehicles(data.vehicles);MAPS=data.maps;ROLES=data.roles;MISSIONS=data.missions;VEHICLES=data.vehicles;selectedMarineVehicle=VEHICLES[0].id;if(!MAPS.some(m=>m.id===selectedMap))selectedMap=MAPS[0].id;if(!ROLES.some(r=>r.id===selectedRole))selectedRole=ROLES[0].id;roleSessions=Object.create(null);savePreferences();renderSelection();if(scene)createWorld(selectedMap);$("dataStatus").textContent='Pacote carregado nesta sessão.';$("menuError").classList.add('hidden');}catch(error){$("menuError").textContent='Pacote rejeitado: '+error.message;$("menuError").classList.remove('hidden');}finally{$("importDataFile").value='';}}
-  async function bootstrap(){const start=$("startBtn");start.disabled=true;try{if(location.protocol==='file:')throw Error('Utilize http://localhost:8000: JSON não carrega via file://');const [maps,roles,missions,vehicles,landVehicles]=await Promise.all([fetchJSON('dados/mapas.json'),fetchJSON('dados/profissoes.json'),fetchJSON('dados/missoes.json'),fetchJSON('dados/veiculos.json'),fetchJSON('dados/veiculos-terrestres.json')]);validateData(maps,roles,missions);validateVehicles(vehicles);validateLandVehicles(landVehicles);MAPS=maps;ROLES=roles;MISSIONS=missions;VEHICLES=vehicles;LAND_CONFIG=landVehicles;landSystem=window.WMKTerrestres.create(THREE);selectedMarineVehicle=VEHICLES[0].id;readPreferences();renderSelection();initThree();installControls();if(!renderer)throw Error('WebGL indisponível');start.disabled=false;$("dataStatus").textContent='Dados carregados: '+MAPS.length+' mapas, '+ROLES.length+' profissões.';}catch(error){console.error(error);$("menuError").textContent='Erro: '+error.message;$("menuError").classList.remove('hidden');$("dataStatus").textContent='Falha ao carregar dados.';start.disabled=true;}}
+  async function bootstrap(){const start=$("startBtn");start.disabled=true;try{if(location.protocol==='file:')throw Error('Utilize http://localhost:8000: JSON não carrega via file://');const [maps,roles,missions,vehicles,landVehicles]=await Promise.all([fetchJSON('dados/mapas.json'),fetchJSON('dados/profissoes.json'),fetchJSON('dados/missoes.json'),fetchJSON('dados/veiculos.json'),fetchJSON('dados/veiculos-terrestres.json')]);validateData(maps,roles,missions);validateVehicles(vehicles);validateLandVehicles(landVehicles);MAPS=maps;ROLES=roles;MISSIONS=missions;VEHICLES=vehicles;LAND_CONFIG=landVehicles;loadVehicleEditorOverrides();landSystem=window.WMKTerrestres.create(THREE);selectedMarineVehicle=VEHICLES[0].id;readPreferences();renderSelection();initThree();installControls();if(!renderer)throw Error('WebGL indisponível');start.disabled=false;$("dataStatus").textContent='Dados carregados: '+MAPS.length+' mapas, '+ROLES.length+' profissões.';}catch(error){console.error(error);$("menuError").textContent='Erro: '+error.message;$("menuError").classList.remove('hidden');$("dataStatus").textContent='Falha ao carregar dados.';start.disabled=true;}}
   function renderSelection() {
     $("mapGrid").innerHTML = MAPS.map((map) => `
       <button class="map-card ${map.id === selectedMap ? "active" : ""}" type="button" data-map="${map.id}">
