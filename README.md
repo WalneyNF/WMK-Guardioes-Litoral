@@ -2,7 +2,7 @@
 
 **Simulador 3D de patrulha, salvamento, investigação e proteção ambiental em praias brasileiras.**
 
-**Versão experimental atual:** 0.6.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
+**Versão experimental atual:** 0.7.0 · **Idioma:** Português (Brasil) · **Tecnologia:** HTML, CSS, JavaScript e Three.js r128.
 
 **Desenvolvimento e adaptação WMK:** **Walney Moreira Klein** — [walneyk@hotmail.com](mailto:walneyk@hotmail.com).
 
@@ -136,3 +136,12 @@ Os dois veículos de serviço ficam estacionados na estrada (X=-37): **Quadricic
 **Testes:** execute `node tests/validar.js` e `node --test tests/terrestres.test.js`. Foram adicionados testes de existência de veículos, entrada e exclusividade, aceleração/frenagem, limites da estrada e permanência durante troca de controle. Os testes não substituem a inspeção WebGL no navegador.
 
 **Limitações:** veículos procedurais simplificados, sem tráfego, colisões sofisticadas, pacientes ou IA autônoma. Para executar utilize servidor HTTP, por exemplo `py -m http.server 8000`.
+
+
+## 🛠 WMK Editor de Veículos — v0.7.0
+
+Abra [editor-veiculos.html](editor-veiculos.html) no menu inicial. O editor permite selecionar os cinco veículos existentes, modificar **velocidade, aceleração, resistência, cores, escala das embarcações e localização dos terrestres** e salvar presets JSON. Existe uma prévia **esquemática em 2D** e painéis que podem ser movidos e redimensionados no desktop. IDs, classes e tipos de modelo permanecem fixos.
+
+**Como usar:** selecione o veículo, altere os campos, clique **Aplicar alterações** e **Salvar no navegador**. Volte ao jogo e recarregue a página: os ajustes validados serão aplicados. Os botões **Exportar JSON** e **Importar JSON** trabalham com `schemaVersion: 1` e as coleções `marine` e `land`. Salvar no navegador não grava arquivos no GitHub nem altera os JSONs originais.
+
+**Arquivos:** `editor-veiculos.html`, `js/editor-veiculos.js` e `tests/editor-veiculos.test.js`. Consulte o [roadmap](roadmap.html) para limitações e próximos recursos (GLB, gizmos, peças e prévia 3D). A visualização gráfica do editor requer teste manual em navegador real.
