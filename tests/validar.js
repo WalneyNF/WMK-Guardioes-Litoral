@@ -1,23 +1,49 @@
-/* Testes estáticos e sintaxe do protótipo, sem dependências externas. */
+/* WMK Guardiões do Litoral - validação estática v0.3.0 sem dependências externas. */
 const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const path = require('node:path');
-const html = fs.readFileSync(path.join(__dirname,'../index.html'), 'utf8');
-const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(x=>x[1]).filter(Boolean);
-assert.ok(scripts.length >= 1, 'Script interno não encontrado');
-scripts.forEach((code,i) => new vm.Script(code,{filename:'index-inline-'+i+'.js'}));
-for (const id of ['menu','hud','startBtn','actionBtn','switchBtn','pauseBtn','mapCanvas','reportOverlay']) {
-  assert.ok(html.includes('id="'+id+'"'), 'Elemento obrigatório não encontrado: '+id);
+const root = path.join(__dirname, '..');
+const load = p => fs.readFileSync(path.join(root, p), 'utf8');
+const html = load('index.html');
+const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)]
+  .map(x => x[1]).filter(Boolean);
+assert.ok(scripts.length, 'JavaScript embutido ausente');
+scripts.forEach((script, i) => new vm.Script(script, {filename:'inline-' + i + '.js'}));
+for (const id of ['menu','hud','startBtn','actionBtn','switchBtn','pauseBtn',
+                  'mapCanvas','reportOverlay','dataStatus','exportDataBtn','importDataBtn','importDataFile']) {
+  assert.ok(html.includes('id="' + id + '"'), 'Elemento ausente: ' + id);
 }
-for (const name of ['function switchRole()', 'function saveRoleSession()', 'function beginMission()', 'function createWorld(', 'function drawMinimap()']) {
-  assert.ok(html.includes(name), 'Função obrigatória ausente: '+name);
+for (const name of ['function switchRole()', 'function saveRoleSession()', 'function beginMission()',
+                    'function createWorld(', 'function drawMinimap()', 'function validateData(',
+                    'function exportDataBundle()', 'function importDataBundle(', 'async function bootstrap()']) {
+  assert.ok(html.includes(name), 'Função ausente: ' + name);
 }
-assert.ok(html.includes('data-key="d"'), 'Direção direita no celular ausente');
-assert.ok(html.includes('squad[role.id]'), 'Instanciação persistente de agentes ausente');
-assert.ok(html.includes('roleSessions[selectedRole]'), 'Sessão por profissão ausente');
-assert.ok(html.includes('code === "Tab"'), 'Atalho de troca ausente');
-for(const name of ['README.md','LICENSE','roadmap.html','pesquisa.html','manuais/primeiro-contato.html']) {
- assert.ok(fs.existsSync(path.join(__dirname,'..',name)), 'Arquivo não encontrado: '+name);
+assert.ok(!html.includes('buildWorld('), 'Chamada para função inexistente buildWorld');
+assert.ok(html.includes('data-key="d"'), 'Controle móvel para direita ausente');
+assert.ok(html.includes('squad[role.id]'), 'Equipe persistente ausente');
+assert.ok(html.includes('roleSessions[selectedRole]'), 'Missões por profissão ausentes');
+assert.ok(html.includes('code === "Tab"'), 'Troca por Tab ausente');
+assert.ok(html.includes('bootstrap();'), 'Carregamento assíncrono ausente');
+
+const maps = JSON.parse(load('dados/mapas.json'));
+const roles = JSON.parse(load('dados/profissoes.json'));
+const missions = JSON.parse(load('dados/missoes.json'));
+const isColor = x => typeof x === 'string' && /^#[0-9a-f]{6}$/i.test(x);
+const isText = x => typeof x === 'string' && x.trim().length > 0 && x.length <= 500;
+const isFiniteNumber = x => typeof x === 'number' && Number.isFinite(x);
+const isId = x => typeof x === 'string' && /^[a-z0-9_-]{1,40}$/.test(x);
+const validationCode = html.slice(html.indexOf('  function validateData('),
+  html.indexOf('  async function fetchJSON('));
+assert.ok(validationCode.includes('function validateData('), 'Validador não encontrado');
+const validateData = new Function('isColor', 'isText', 'isFiniteNumber', 'isId',
+  validationCode + '\nreturn validateData;')(isColor, isText, isFiniteNumber, isId);
+validateData(maps, roles, missions);
+assert.throws(() => validateData(maps, roles, {}), /Missões ausentes/);
+assert.throws(() => validateData([...maps, maps[0]], roles, missions), /Mapa inválido/);
+assert.throws(() => validateData(maps, roles, {...missions, unknown:[]}), /Missões sem profissão/);
+for (const p of ['README.md','LICENSE','roadmap.html','pesquisa.html',
+                 'manuais/primeiro-contato.html','manuais/dados-json.html']) {
+  assert.ok(fs.existsSync(path.join(root, p)), 'Documento ausente: ' + p);
 }
-console.log('OK: sintaxe JavaScript, componentes principais, troca de agentes e documentação.');
+console.log('OK: sintaxe JavaScript, estrutura da interface, JSONs, validação e testes negativos.');
