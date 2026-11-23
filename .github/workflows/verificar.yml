@@ -14,3 +14,5 @@ jobs:
       - run: node tests/validar.js
       - run: node --test tests/terrestres.test.js
       - run: node --test tests/editor-veiculos.test.js
+
+      - run: node --test tests/preview3d.test.js
